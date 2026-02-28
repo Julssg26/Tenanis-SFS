@@ -1,0 +1,9 @@
+{
+  "/dashboard/page": "app/dashboard/page.js",
+  "/performance/page": "app/performance/page.js",
+  "/control-tower/page": "app/control-tower/page.js",
+  "/fleet-health/page": "app/fleet-health/page.js",
+  "/simulator/page": "app/simulator/page.js",
+  "/drivers/page": "app/drivers/page.js",
+  "/settings/page": "app/settings/page.js"
+}
