@@ -48,23 +48,13 @@ export default function Sidebar() {
       </nav>
 
       {/* Tenaris Logo bottom */}
-      <div className="px-4 pb-5 pt-2 border-t border-gray-100">
-        <div className="flex items-center gap-1.5">
-          <div className="flex flex-col gap-[2px]">
-            <div className="flex gap-[2px]">
-              <div className="w-3 h-1 bg-[#1a237e] rounded-sm" />
-              <div className="w-3 h-1 bg-[#1a237e] rounded-sm" />
-            </div>
-            <div className="flex gap-[2px]">
-              <div className="w-3 h-1 bg-[#16a34a] rounded-sm" />
-              <div className="w-3 h-1 bg-[#e91e8c] rounded-sm" />
-            </div>
-          </div>
-          <div>
-            <div className="text-[13px] font-bold text-[#1a237e] leading-none">Tenaris</div>
-            <div className="text-[9px] text-gray-400 leading-none mt-0.5">© 2026 · TSFS</div>
-          </div>
-        </div>
+      <div className="px-4 pb-5 pt-3 border-t border-gray-100">
+        <img
+          src="/tenaris-logo.png"
+          alt="Tenaris"
+          className="w-[112px] object-contain"
+        />
+        <div className="text-[9px] text-gray-400 mt-1">© 2026 - TSFS</div>
       </div>
     </aside>
   )
