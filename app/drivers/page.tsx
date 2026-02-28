@@ -66,8 +66,8 @@ export default function DriversPage() {
 
       {/* Table */}
       <DataTable
-        columns={COLUMNS as Column<Record<string, unknown>>[]}
-        data={OPERATORS as unknown as Record<string, unknown>[]}
+        columns={COLUMNS}
+        data={OPERATORS}
         searchPlaceholder="Search"
         searchKeys={['name', 'opId', 'unit']}
         buttonLabel="Clean Search"

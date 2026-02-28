@@ -1,13 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search } from 'lucide-react'
 import clsx from 'clsx'
 
+// Column is covariant on T via render — keeping it generic for call-site type safety
+// but the component itself accepts Column<unknown>[] internally to avoid contravariance issues.
 export interface Column<T> {
-  key: keyof T | string
+  key: string
   header: string
   render?: (row: T) => React.ReactNode
+  align?: 'left' | 'center' | 'right'
+}
+
+// Internal column type that erases T so the component doesn't need a constrained generic
+interface AnyColumn {
+  key: string
+  header: string
+  render?: (row: unknown) => React.ReactNode
   align?: 'left' | 'center' | 'right'
 }
 
@@ -20,20 +30,33 @@ interface DataTableProps<T> {
   buttonLabel?: string
 }
 
-export default function DataTable<T extends Record<string, unknown>>({
-  columns, data, searchPlaceholder = 'Search', searchKeys = [], pageSize = 7, buttonLabel = 'Clean Search'
+// The component signature uses T without constraints — data and columns stay in sync,
+// and internally we treat rows as unknown (safe because columns own the render fns).
+export default function DataTable<T>({
+  columns,
+  data,
+  searchPlaceholder = 'Search',
+  searchKeys = [],
+  pageSize = 7,
+  buttonLabel = 'Clean Search',
 }: DataTableProps<T>) {
   const [query, setQuery] = useState('')
-  const [page, setPage] = useState(1)
+  const [page, setPage]   = useState(1)
+
+  // Cast once here — safe because render() is defined per-column and already typed
+  const cols = columns as AnyColumn[]
+  const rows = data as unknown[]
 
   const filtered = query
-    ? data.filter(row =>
-        searchKeys.some(k => String(row[k as keyof typeof row] ?? '').toLowerCase().includes(query.toLowerCase()))
+    ? rows.filter(row =>
+        searchKeys.some(k =>
+          String((row as Record<string, unknown>)[k] ?? '').toLowerCase().includes(query.toLowerCase())
+        )
       )
-    : data
+    : rows
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
-  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const paginated  = filtered.slice((page - 1) * pageSize, page * pageSize)
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -62,12 +85,12 @@ export default function DataTable<T extends Record<string, unknown>>({
         <table className="w-full">
           <thead>
             <tr className="bg-[#1a237e]">
-              {columns.map(col => (
+              {cols.map(col => (
                 <th
-                  key={String(col.key)}
+                  key={col.key}
                   className={clsx(
                     'px-4 py-3 text-[12px] font-semibold text-white',
-                    col.align === 'right' ? 'text-right' :
+                    col.align === 'right'  ? 'text-right'  :
                     col.align === 'center' ? 'text-center' : 'text-left'
                   )}
                 >
@@ -79,16 +102,18 @@ export default function DataTable<T extends Record<string, unknown>>({
           <tbody>
             {paginated.map((row, ri) => (
               <tr key={ri} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                {columns.map(col => (
+                {cols.map(col => (
                   <td
-                    key={String(col.key)}
+                    key={col.key}
                     className={clsx(
                       'px-4 py-3 text-[13px] text-gray-700',
-                      col.align === 'right' ? 'text-right' :
+                      col.align === 'right'  ? 'text-right'  :
                       col.align === 'center' ? 'text-center' : 'text-left'
                     )}
                   >
-                    {col.render ? col.render(row) : String(row[col.key as keyof T] ?? '')}
+                    {col.render
+                      ? col.render(row)
+                      : String((row as Record<string, unknown>)[col.key] ?? '')}
                   </td>
                 ))}
               </tr>

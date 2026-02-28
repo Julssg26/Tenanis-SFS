@@ -225,8 +225,8 @@ export default function PerformancePage() {
         <>
           <EquipmentRanking />
           <DataTable
-            columns={EQUIP_COLS as Column<Record<string, unknown>>[]}
-            data={EQUIPMENT_PERF as unknown as Record<string, unknown>[]}
+            columns={EQUIP_COLS}
+            data={EQUIPMENT_PERF}
             searchPlaceholder="Buscar"
             searchKeys={['id']}
             buttonLabel="Limpiar Búsqueda"

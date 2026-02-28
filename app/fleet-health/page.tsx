@@ -61,8 +61,8 @@ export default function FleetHealthPage() {
 
       {/* Table */}
       <DataTable
-        columns={COLUMNS as Column<Record<string, unknown>>[]}
-        data={FLEET_UNITS as unknown as Record<string, unknown>[]}
+        columns={COLUMNS}
+        data={FLEET_UNITS}
         searchPlaceholder="Search"
         searchKeys={['id']}
         buttonLabel="Clean Search"
