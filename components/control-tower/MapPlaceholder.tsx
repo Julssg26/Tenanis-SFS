@@ -24,6 +24,10 @@ interface MapPlaceholderProps {
 }
 
 export default function MapPlaceholder({ activeTab, onTabChange }: MapPlaceholderProps) {
+  const mapSrc = activeTab === 'forklift'
+    ? '/images/control-tower/forklift-tracking/mapa.jpg'
+    : '/images/control-tower/camera-monitor/mapa.jpg'
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       {/* Tabs */}
@@ -44,19 +48,21 @@ export default function MapPlaceholder({ activeTab, onTabChange }: MapPlaceholde
         ))}
       </div>
 
-      {/* Map area */}
-      <div className="relative bg-[#e8eed8] overflow-hidden" style={{ height: 520 }}>
-        <div className="absolute inset-0 bg-gradient-to-br from-[#7a9b5a] via-[#4a7a3a] to-[#1a4a8a] opacity-70" />
+      {/* Map area — real image + SVG overlay */}
+      <div className="relative overflow-hidden" style={{ height: 520 }}>
 
-        {/* Zone labels */}
-        <div className="absolute top-[28%] left-[38%] bg-[#1a237e]/80 text-white text-[11px] font-bold px-3 py-1 rounded">UT 31</div>
-        <div className="absolute top-[36%] left-[34%] bg-[#1a237e]/80 text-white text-[11px] font-bold px-3 py-1 rounded">UT 32</div>
-        <div className="absolute top-[26%] left-[52%] bg-[#1a237e]/80 text-white text-[11px] font-bold px-3 py-1 rounded">PREM 31</div>
-        <div className="absolute top-[24%] left-[20%] bg-[#1a237e]/80 text-white text-[11px] font-bold px-2 py-1 rounded">M 31</div>
-        <div className="absolute top-[36%] left-[15%] bg-[#1a237e]/80 text-white text-[11px] font-bold px-2 py-1 rounded">M 32</div>
-        <div className="absolute top-[20%] right-[8%] bg-[#1a237e]/80 text-white text-[11px] font-bold px-2 py-1 rounded rotate-90">4TOP</div>
+        {/* Real map image — fills container, no distortion */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={mapSrc}
+          alt="Plant map"
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+        />
 
-        {/* Vehicle pins — always visible */}
+        {/* Slight dark overlay so pins/labels read cleanly */}
+        <div className="absolute inset-0 bg-black/10" />
+
+        {/* Vehicle pins — always visible on both tabs */}
         {VEHICLES.map((v, i) => (
           <div
             key={i}
@@ -65,36 +71,35 @@ export default function MapPlaceholder({ activeTab, onTabChange }: MapPlaceholde
           >
             <div className="relative">
               <div
-                className="w-8 h-8 rounded-full border-2 border-white shadow-md flex items-center justify-center"
+                className="w-9 h-9 rounded-full border-2 border-white shadow-lg flex items-center justify-center"
                 style={{ background: v.color }}
               >
-                <Truck size={13} className="text-white" />
+                <Truck size={14} className="text-white" />
               </div>
               {v.status === 'critical' && (
-                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 border border-white rounded-full" />
+                <div className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 border border-white rounded-full" />
               )}
             </div>
           </div>
         ))}
 
-        {/* Forklift tracking lines — only on forklift tab */}
+        {/* Forklift tracking route lines — only on forklift tab */}
         {activeTab === 'forklift' && (
           <svg className="absolute inset-0 w-full h-full pointer-events-none">
-            <line x1="22%" y1="38%" x2="50%" y2="35%" stroke="#3b82f6" strokeWidth="2" strokeDasharray="4,2" />
-            <line x1="50%" y1="35%" x2="67%" y2="55%" stroke="#3b82f6" strokeWidth="2" strokeDasharray="4,2" />
-            <line x1="42%" y1="68%" x2="55%" y2="42%" stroke="#3b82f6" strokeWidth="2" strokeDasharray="4,2" />
-            <line x1="28%" y1="70%" x2="35%" y2="55%" stroke="#3b82f6" strokeWidth="2" strokeDasharray="4,2" />
+            <line x1="22%" y1="38%" x2="50%" y2="35%" stroke="#3b82f6" strokeWidth="2.5" strokeDasharray="5,3" />
+            <line x1="50%" y1="35%" x2="67%" y2="55%" stroke="#3b82f6" strokeWidth="2.5" strokeDasharray="5,3" />
+            <line x1="42%" y1="68%" x2="55%" y2="42%" stroke="#3b82f6" strokeWidth="2.5" strokeDasharray="5,3" />
+            <line x1="28%" y1="70%" x2="35%" y2="55%" stroke="#3b82f6" strokeWidth="2.5" strokeDasharray="5,3" />
+            <line x1="35%" y1="55%" x2="50%" y2="35%" stroke="#3b82f6" strokeWidth="2.5" strokeDasharray="5,3" />
             {[
               [22,38],[50,35],[67,55],[42,68],[55,42],[28,70],[35,55],[58,72]
             ].map(([x,y], i) => (
-              <circle key={i} cx={`${x}%`} cy={`${y}%`} r="5" fill="#eab308" stroke="white" strokeWidth="1.5" />
+              <circle key={i} cx={`${x}%`} cy={`${y}%`} r="6" fill="#eab308" stroke="white" strokeWidth="2" />
             ))}
           </svg>
         )}
-
-        <div className="absolute top-4 right-[28%] text-white/60 text-[13px] font-bold">900</div>
-        <div className="absolute bottom-[28%] left-[38%] text-white/60 text-[13px] font-bold">800</div>
       </div>
     </div>
   )
 }
+
