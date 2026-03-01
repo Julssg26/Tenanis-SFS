@@ -10,6 +10,9 @@ const REAL_TIME_STATS: StatItem[] = [
   { label: 'Congestion',     value: '0.62'   },
 ]
 
+// Only show Blue Yard and Green Yard in this card
+const YARD_ONLY = YARD_CAPACITY.filter(z => z.name === 'Blue Yard' || z.name === 'Green Yard')
+
 export default function YardCapacity() {
   return (
     <>
@@ -17,7 +20,7 @@ export default function YardCapacity() {
       <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
         <div className="text-[13px] font-semibold text-gray-800 mb-3">Yard Capacity</div>
         <div className="space-y-3">
-          {YARD_CAPACITY.map(zone => (
+          {YARD_ONLY.map(zone => (
             <div key={zone.name}>
               <div className="flex justify-between text-[12px] text-gray-600 mb-1">
                 <span>{zone.name}</span>

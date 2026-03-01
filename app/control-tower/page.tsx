@@ -6,6 +6,7 @@ import SectionHeader from '@/components/ui/SectionHeader'
 import MapPlaceholder from '@/components/control-tower/MapPlaceholder'
 import ActiveTrips from '@/components/control-tower/ActiveTrips'
 import YardCapacity from '@/components/control-tower/YardCapacity'
+import ProcessCard from '@/components/control-tower/ProcessCard'
 
 const FILTER_CHIPS = [
   { label: 'Active',            color: '#16a34a' },
@@ -44,10 +45,13 @@ export default function ControlTowerPage() {
       </div>
 
       <div className="grid grid-cols-[1fr_280px] gap-4">
-        {/* Map — receives tab state + setter */}
-        <MapPlaceholder activeTab={activeTab} onTabChange={setActiveTab} />
+        {/* Left column: Map + Process card below */}
+        <div className="flex flex-col gap-4">
+          <MapPlaceholder activeTab={activeTab} onTabChange={setActiveTab} />
+          <ProcessCard />
+        </div>
 
-        {/* Right sidebar — receives same tab state, renders different content per tab */}
+        {/* Right sidebar */}
         <div className="space-y-4">
           <ActiveTrips activeTab={activeTab} />
           <YardCapacity />

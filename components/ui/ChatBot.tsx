@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { Send, X, RotateCcw, Bot } from 'lucide-react'
 
 interface Message {
@@ -20,9 +21,13 @@ const INITIAL_MESSAGES: Message[] = [
 ]
 
 export default function ChatBot() {
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES)
   const [input, setInput] = useState('')
+
+  // Don't render on the login page
+  if (pathname === '/') return null
 
   const send = (text: string) => {
     if (!text.trim()) return
