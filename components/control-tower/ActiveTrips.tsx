@@ -60,7 +60,7 @@ function CameraMonitorSidebar() {
 const FORKLIFT_ITEMS = [
   { src: '/images/control-tower/forklift-tracking/trip5.jpg', label: 'Forklift 32: Loading Area A', value: null   },
   { src: '/images/control-tower/forklift-tracking/trip6.jpg', label: 'Forklift 31: Loading Area 2', value: '15 %' },
-  { src: '/images/control-tower/forklift-tracking/trip7.jpg', label: 'Forklift 33: Loading Area B', value: '45 $' },
+  { src: '/images/control-tower/forklift-tracking/trip7.jpg', label: 'Forklift 33: Loading Area B', value: '45 %' },
   { src: '/images/control-tower/forklift-tracking/trip8.jpg', label: 'Maintenance Comboy',           value: '50 %' },
   { src: '/images/control-tower/forklift-tracking/trip9.jpg', label: 'Average Speed: Round Dmn',     value: '24.1 %' },
 ]
