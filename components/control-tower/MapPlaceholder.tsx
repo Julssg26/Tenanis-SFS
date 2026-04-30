@@ -3,16 +3,13 @@
 import dynamic from 'next/dynamic'
 import { Camera, Truck } from 'lucide-react'
 
-// Load OLMap only on client — OpenLayers cannot run on the server
 const OLMap = dynamic(() => import('./OLMap'), {
   ssr: false,
   loading: () => (
-    <div
-      className="w-full rounded-b-xl bg-gray-100 flex items-center justify-center"
-      style={{ height: 520 }}
-    >
+    <div className="w-full bg-gray-100 flex items-center justify-center" style={{ height: 500 }}>
       <div className="flex flex-col items-center gap-3 text-gray-400">
-        <svg className="animate-spin" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg className="animate-spin" width="28" height="28" viewBox="0 0 24 24"
+          fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M21 12a9 9 0 1 1-6.219-8.56" strokeLinecap="round" />
         </svg>
         <span className="text-[13px]">Loading map…</span>
@@ -26,10 +23,9 @@ const TABS = [
   { id: 'forklift', label: 'Forklift Tracking', Icon: Truck  },
 ]
 
-// Status legend entries
 const CAMERA_LEGEND = [
-  { color: '#3b82f6', label: 'Blue Yard → MOTU'      },
-  { color: '#16a34a', label: 'Storage A → Dispatch'   },
+  { color: '#3b82f6', label: 'Blue Yard → MOTU'       },
+  { color: '#16a34a', label: 'Storage A → Dispatch'    },
   { color: '#eab308', label: 'Inspection → Green Yard' },
 ]
 
@@ -49,8 +45,9 @@ export default function MapPlaceholder({ activeTab, onTabChange }: MapPlaceholde
   const legend = activeTab === 'forklift' ? FORKLIFT_LEGEND : CAMERA_LEGEND
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      {/* Tabs */}
+    // ⚠️ NO overflow-hidden here — OL canvas must not be clipped
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      {/* Tabs + legend */}
       <div className="flex items-center justify-between border-b border-gray-200 px-4 pt-3 pb-0">
         <div className="flex">
           {TABS.map(({ id, label, Icon }) => (
@@ -68,8 +65,6 @@ export default function MapPlaceholder({ activeTab, onTabChange }: MapPlaceholde
             </button>
           ))}
         </div>
-
-        {/* Legend */}
         <div className="flex items-center gap-3 pb-2">
           {legend.map((item) => (
             <div key={item.label} className="flex items-center gap-1.5">
@@ -80,7 +75,7 @@ export default function MapPlaceholder({ activeTab, onTabChange }: MapPlaceholde
         </div>
       </div>
 
-      {/* OpenLayers map */}
+      {/* Map — rendered in its own div with explicit height */}
       <OLMap activeTab={activeTab} />
     </div>
   )
