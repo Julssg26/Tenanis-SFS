@@ -255,7 +255,18 @@ const OLMap = forwardRef<OLMapHandle, OLMapProps>(
       map.getView().animate({ zoom: isForklift ? 16 : 15, duration: 400 })
     }, [activeTab])
 
-    return <div ref={containerRef} style={{ width: '100%', height: '500px' }} />
+    return (
+    <div
+      ref={containerRef}
+      style={{
+        width: '100%',
+        height: '500px',
+        overflow: 'hidden',      // prevent OL from leaking outside
+        touchAction: 'none',     // stop browser from stealing pointer events from OL
+        userSelect: 'none',      // prevent text-selection drag artifacts
+      }}
+    />
+  )
   }
 )
 

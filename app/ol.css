@@ -1,2 +1,20 @@
 /* OpenLayers stylesheet — must be imported once globally */
 @import 'ol/ol.css';
+
+/* ── Layout stability — prevent horizontal overflow from OL or wide content ── */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* OL map container: isolate pointer events so map pan doesn't scroll the page */
+.ol-viewport {
+  touch-action: none !important;
+}
+
+/* Prevent any map control from causing horizontal scroll */
+.ol-overlaycontainer,
+.ol-overlaycontainer-stopevent {
+  overflow: hidden;
+}
