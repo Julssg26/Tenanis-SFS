@@ -1,7 +1,10 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import { useRef } from 'react'
 import { Camera, Truck } from 'lucide-react'
+import AStarPanel from './AStarPanel'
+import type { OLMapHandle } from './OLMap'
 
 const OLMap = dynamic(() => import('./OLMap'), {
   ssr: false,
@@ -27,6 +30,7 @@ const CAMERA_LEGEND = [
   { color: '#3b82f6', label: 'Blue Yard → MOTU'       },
   { color: '#16a34a', label: 'Storage A → Dispatch'    },
   { color: '#eab308', label: 'Inspection → Green Yard' },
+  { color: '#7c3aed', label: 'A* Route'                },
 ]
 
 const FORKLIFT_LEGEND = [
@@ -42,10 +46,10 @@ interface MapPlaceholderProps {
 }
 
 export default function MapPlaceholder({ activeTab, onTabChange }: MapPlaceholderProps) {
-  const legend = activeTab === 'forklift' ? FORKLIFT_LEGEND : CAMERA_LEGEND
+  const olMapRef = useRef<OLMapHandle>(null)
+  const legend   = activeTab === 'forklift' ? FORKLIFT_LEGEND : CAMERA_LEGEND
 
   return (
-    // ⚠️ NO overflow-hidden here — OL canvas must not be clipped
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
       {/* Tabs + legend */}
       <div className="flex items-center justify-between border-b border-gray-200 px-4 pt-3 pb-0">
@@ -75,8 +79,18 @@ export default function MapPlaceholder({ activeTab, onTabChange }: MapPlaceholde
         </div>
       </div>
 
-      {/* Map — rendered in its own div with explicit height */}
-      <OLMap activeTab={activeTab} />
+      {/* A* Route Planner — only in Camera Monitor tab */}
+      {activeTab === 'camera' && (
+        <div className="px-4 pt-3 pb-0">
+          <AStarPanel
+            onRoute={(nodeIds) => olMapRef.current?.drawRoute(nodeIds)}
+            onClear={() => olMapRef.current?.clearRoute()}
+          />
+        </div>
+      )}
+
+      {/* Map */}
+      <OLMap ref={olMapRef} activeTab={activeTab} />
     </div>
   )
 }
