@@ -14,6 +14,10 @@ const ALERTS = getMockAlerts()
 function ControlTowerInner() {
   const searchParams    = useSearchParams()
   const [activeTab, setActiveTab] = useState<'camera' | 'forklift'>('camera')
+
+  const handleTabChange = (tab: string) => {
+    if (tab === 'camera' || tab === 'forklift') setActiveTab(tab)
+  }
   const [initialUnit, setInitialUnit] = useState<string | null>(null)
   const [alertBanner, setAlertBanner] = useState<string | null>(null)
   const didInit = useRef(false)
@@ -67,7 +71,7 @@ function ControlTowerInner() {
 
       <MapPlaceholder
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={handleTabChange}
         initialUnitId={initialUnit}
       />
     </div>
