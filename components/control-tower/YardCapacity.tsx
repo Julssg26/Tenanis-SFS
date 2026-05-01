@@ -1,17 +1,30 @@
+// components/control-tower/YardCapacity.tsx
 import ProgressBar from '@/components/ui/ProgressBar'
-import { YARD_CAPACITY } from '@/lib/mock-data'
 
-interface StatItem { label: string; value: string }
+interface Zone { name: string; pct: number }
 
-const REAL_TIME_STATS: StatItem[] = [
+// Only Blue Yard and Green Yard (as per previous design decision)
+const YARD_ZONES: Zone[] = [
+  { name: 'Blue Yard',  pct: 82 },
+  { name: 'Green Yard', pct: 45 },
+]
+
+const REAL_TIME_STATS = [
   { label: 'Avg Cycle Time', value: '23 min' },
   { label: 'Active Units',   value: '12/15'  },
-  { label: 'Pending Task',   value: '8'      },
+  { label: 'Pending Tasks',  value: '8'      },
   { label: 'Congestion',     value: '0.62'   },
 ]
 
-// Only show Blue Yard and Green Yard in this card
-const YARD_ONLY = YARD_CAPACITY.filter(z => z.name === 'Blue Yard' || z.name === 'Green Yard')
+// Inline progress bar if ProgressBar component doesn't exist in target repo
+function Bar({ pct }: { pct: number }) {
+  const color = pct >= 75 ? 'bg-red-500' : pct >= 50 ? 'bg-amber-400' : 'bg-green-500'
+  return (
+    <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+      <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${pct}%` }} />
+    </div>
+  )
+}
 
 export default function YardCapacity() {
   return (
@@ -20,13 +33,13 @@ export default function YardCapacity() {
       <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
         <div className="text-[13px] font-semibold text-gray-800 mb-3">Yard Capacity</div>
         <div className="space-y-3">
-          {YARD_ONLY.map(zone => (
+          {YARD_ZONES.map(zone => (
             <div key={zone.name}>
               <div className="flex justify-between text-[12px] text-gray-600 mb-1">
                 <span>{zone.name}</span>
                 <span className="font-semibold">{zone.pct} %</span>
               </div>
-              <ProgressBar value={zone.pct} showLabel={false} size="md" />
+              <Bar pct={zone.pct} />
             </div>
           ))}
         </div>

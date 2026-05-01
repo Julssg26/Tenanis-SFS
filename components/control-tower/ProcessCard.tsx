@@ -1,4 +1,13 @@
-import ProgressBar from '@/components/ui/ProgressBar'
+// components/control-tower/ProcessCard.tsx
+
+function Bar({ pct }: { pct: number }) {
+  const color = pct >= 75 ? 'bg-red-500' : pct >= 50 ? 'bg-amber-400' : 'bg-green-500'
+  return (
+    <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+      <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
+    </div>
+  )
+}
 
 const PROCESS_ITEMS = [
   { name: 'Dispatch',   pct: 73 },
@@ -16,7 +25,7 @@ export default function ProcessCard() {
               <span>{item.name}</span>
               <span className="font-semibold">{item.pct} %</span>
             </div>
-            <ProgressBar value={item.pct} showLabel={false} size="md" />
+            <Bar pct={item.pct} />
           </div>
         ))}
       </div>
