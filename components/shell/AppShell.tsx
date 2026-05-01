@@ -1,35 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import Topbar from './Topbar'
 import Sidebar from './Sidebar'
 
+// Pages that should render WITHOUT the shell (login, etc.)
+const NO_SHELL_ROUTES = ['/']
+
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const pathname  = usePathname()
-  const router    = useRouter()
-  const isLogin   = pathname === '/'
-  const [checked, setChecked] = useState(false)
+  const pathname = usePathname()
 
-  useEffect(() => {
-    // On the login page, never block — just mark as checked
-    if (isLogin) { setChecked(true); return }
-
-    // On any other route, require auth
-    if (localStorage.getItem('isAuth') !== '1') {
-      router.replace('/')
-      return
-    }
-    setChecked(true)
-  }, [isLogin, router])
-
-  // ── Login page: no shell, full-screen ──────────────────────────
-  if (isLogin) {
+  // Login page — render children only, no Topbar/Sidebar
+  if (NO_SHELL_ROUTES.includes(pathname)) {
     return <>{children}</>
   }
-
-  // ── Protected routes: wait for auth check before rendering ─────
-  if (!checked) return null
 
   return (
     <div className="min-h-screen bg-[#f1f3f7]">

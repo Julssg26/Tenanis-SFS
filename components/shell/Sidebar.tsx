@@ -12,91 +12,95 @@ import {
   Settings,
 } from 'lucide-react'
 
-// Custom Apps icon — loaded from /public/icons/apps-icon.png
-function AppsIcon({ size = 20, className = '' }: { size?: number; className?: string }) {
+// Shared custom icon — works for both Apps (PNG) and AI Chat (PNG converted from ICO)
+function CustomIcon({
+  src,
+  alt,
+  active,
+}: {
+  src: string
+  alt: string
+  active: boolean
+}) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/images/icons/apps-icon.png"
-      alt="Apps"
-      width={size}
-      height={size}
-      className={className}
-      style={{ objectFit: 'contain' }}
+      src={src}
+      alt={alt}
+      width={22}
+      height={22}
+      style={{
+        objectFit: 'contain',
+        display: 'block',
+        // Active (blue bg): make white  |  Inactive (white bg): make dark gray
+        filter: active
+          ? 'brightness(0) invert(1)'
+          : 'brightness(0) invert(0) opacity(0.5)',
+      }}
     />
   )
 }
 
 const NAV_ITEMS = [
-  { label: 'Dashboard',     href: '/dashboard',      Icon: LayoutDashboard },
-  { label: 'Control Tower', href: '/control-tower',  Icon: Antenna         },
-  { label: 'Performance',   href: '/performance',    Icon: BarChart2       },
-  { label: 'Fleet Health',  href: '/fleet-health',   Icon: HeartPulse      },
-  { label: 'Simulator',     href: '/simulator',      Icon: Cpu             },
-  { label: 'Drivers',       href: '/drivers',        Icon: Users           },
-  // Apps uses custom PNG icon — handled separately below
-  { label: 'Settings',      href: '/settings',       Icon: Settings        },
+  { label: 'Dashboard',     href: '/dashboard',     Icon: LayoutDashboard },
+  { label: 'Control Tower', href: '/control-tower', Icon: Antenna         },
+  { label: 'Performance',   href: '/performance',   Icon: BarChart2       },
+  { label: 'Fleet Health',  href: '/fleet-health',  Icon: HeartPulse      },
+  { label: 'Simulator',     href: '/simulator',     Icon: Cpu             },
+  { label: 'Drivers',       href: '/drivers',       Icon: Users           },
+  { label: 'Settings',      href: '/settings',      Icon: Settings        },
 ]
+
+const LINK = 'flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-[11px] font-medium transition-colors'
+const ON   = 'bg-[#1a237e] text-white'
+const OFF  = 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
 
 export default function Sidebar() {
   const pathname = usePathname()
-
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(href + '/')
+  const isOn     = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
   return (
     <aside className="fixed left-0 top-14 h-[calc(100vh-56px)] w-[152px] bg-white border-r border-gray-200 flex flex-col justify-between z-10">
       <nav className="flex flex-col gap-0.5 pt-3 px-2">
-        {/* Standard nav items before Apps */}
+
+        {/* Dashboard → Drivers */}
         {NAV_ITEMS.slice(0, 6).map(({ label, href, Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-[11px] font-medium transition-colors ${
-              isActive(href)
-                ? 'bg-[#1a237e] text-white'
-                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
-            }`}
-          >
+          <Link key={href} href={href} className={`${LINK} ${isOn(href) ? ON : OFF}`}>
             <Icon size={20} />
             {label}
           </Link>
         ))}
 
-        {/* Apps — custom icon */}
-        <Link
-          href="/apps"
-          className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-[11px] font-medium transition-colors ${
-            isActive('/apps')
-              ? 'bg-[#1a237e] text-white'
-              : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
-          }`}
-        >
-          <AppsIcon
-            size={20}
-            className={isActive('/apps') ? 'brightness-0 invert' : 'opacity-60'}
+        {/* Apps — custom PNG icon */}
+        <Link href="/apps" className={`${LINK} ${isOn('/apps') ? ON : OFF}`}>
+          <CustomIcon
+            src="/images/icons/apps-icon.png"
+            alt="Apps"
+            active={isOn('/apps')}
           />
           Apps
         </Link>
 
+        {/* AI Chat — PNG converted from ICO for reliable cross-browser rendering */}
+        <Link href="/chat" className={`${LINK} ${isOn('/chat') ? ON : OFF}`}>
+          <CustomIcon
+            src="/images/icons/chat-icon.png"
+            alt="AI Chat"
+            active={isOn('/chat')}
+          />
+          AI Chat
+        </Link>
+
         {/* Settings */}
         {NAV_ITEMS.slice(6).map(({ label, href, Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-[11px] font-medium transition-colors ${
-              isActive(href)
-                ? 'bg-[#1a237e] text-white'
-                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
-            }`}
-          >
+          <Link key={href} href={href} className={`${LINK} ${isOn(href) ? ON : OFF}`}>
             <Icon size={20} />
             {label}
           </Link>
         ))}
       </nav>
 
-      {/* Bottom logo */}
+      {/* Tenaris logo */}
       <div className="pb-4 px-3 flex flex-col items-center gap-1">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/tenaris-logo.png" alt="Tenaris" className="w-[112px] object-contain" />
