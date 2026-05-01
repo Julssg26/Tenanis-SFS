@@ -1,9 +1,34 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import type { Message } from '@/lib/chat/types'
 
 // ── Lightweight markdown renderer (no deps) ───────────────────────────────────
+// ── CT link parser — [[CT:unitId:label]] → navigation button ─────────────────
+function CTLinks({ text, onNavigate }: { text: string; onNavigate: (unitId: string) => void }): React.ReactElement {
+  const parts = text.split(/(\[\[CT:[A-Z0-9-]+:[^\]]+\]\])/g)
+  return (
+    <>
+      {parts.map((part, i) => {
+        const m = part.match(/\[\[CT:([A-Z0-9-]+):([^\]]+)\]\]/)
+        if (m) {
+          return (
+            <button
+              key={i}
+              onClick={() => onNavigate(m[1])}
+              className="inline-flex items-center gap-1 bg-[#1a237e]/10 hover:bg-[#1a237e]/20 text-[#1a237e] text-[11px] font-semibold px-2 py-0.5 rounded-lg transition-colors mx-0.5"
+            >
+              📍 {m[2]}
+            </button>
+          )
+        }
+        return <span key={i}>{part}</span>
+      })}
+    </>
+  )
+}
+
 function renderContent(text: string): React.ReactNode[] {
   const lines = text.split('\n')
   const result: React.ReactNode[] = []
@@ -116,6 +141,7 @@ interface Props {
 }
 
 export default function ChatMessages({ messages, isTyping }: Props) {
+  const router    = useRouter()
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -180,7 +206,12 @@ export default function ChatMessages({ messages, isTyping }: Props) {
               <p className="text-[13px] leading-relaxed">{msg.content}</p>
             ) : (
               <div className="space-y-1">
-                {renderContent(msg.content)}
+                {renderContent(msg.content).map((node, ni) => {
+                  if (typeof node === 'string') {
+                    return <CTLinks key={ni} text={node} onNavigate={uid => router.push(`/control-tower?unit=${uid}`)} />
+                  }
+                  return <span key={ni}>{node}</span>
+                })}
               </div>
             )}
             <div className={`text-[10px] mt-1.5 ${msg.role === 'user' ? 'text-white/60 text-right' : 'text-gray-400'}`}>

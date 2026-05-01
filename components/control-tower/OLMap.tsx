@@ -148,6 +148,7 @@ export interface OLMapHandle {
   drawRoute:     (nodeIds: string[]) => void
   clearRoute:    () => void
   highlightUnit: (unitId: string | null) => void
+  centerOnUnit:  (unitId: string) => void
 }
 
 interface OLMapProps {
@@ -194,6 +195,12 @@ const OLMap = forwardRef<OLMapHandle, OLMapProps>(
         if (fleetLayer.current) { map.removeLayer(fleetLayer.current); fleetLayer.current = null }
         const layer = buildFleetLayer(units.current, unitId)
         map.addLayer(layer); fleetLayer.current = layer
+      },
+      centerOnUnit(unitId: string) {
+        const map = mapRef.current; if (!map) return
+        const unit = units.current.find(u => u.id === unitId)
+        if (!unit) return
+        map.getView().animate({ center: fromLonLat(unit.coordinates), zoom: 17, duration: 600 })
       },
     }))
 

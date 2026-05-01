@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Bell, Search, ChevronDown } from 'lucide-react'
+import { Bell, Search, ChevronDown, ExternalLink } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { getMockAlerts } from '@/lib/alerts/mockAlerts'
 import type { Alert, AlertSeverity } from '@/lib/alerts/types'
 
@@ -27,6 +28,7 @@ function timeAgo(iso: string): string {
 export default function Topbar() {
   const [open, setOpen]           = useState(false)
   const [dismissed, setDismissed] = useState<Set<string>>(new Set())
+  const router                    = useRouter()
   const panelRef                  = useRef<HTMLDivElement>(null)
 
   const visible     = ALL_ALERTS.filter(a => !dismissed.has(a.id) && a.status !== 'resolved')
@@ -151,14 +153,27 @@ export default function Topbar() {
                       </div>
                     </div>
 
-                    {/* Dismiss */}
-                    <button
-                      onClick={() => setDismissed(prev => new Set([...prev, alert.id]))}
-                      className="flex-shrink-0 text-gray-300 hover:text-gray-500 text-[16px] leading-none mt-0.5 transition-colors"
-                      title="Dismiss"
-                    >
-                      ×
-                    </button>
+                    {/* Actions */}
+                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => {
+                          setOpen(false)
+                          router.push(`/control-tower?alert=${alert.id}`)
+                        }}
+                        className="flex items-center gap-1 text-[10px] text-[#1a237e] hover:underline"
+                        title="View in Control Tower"
+                      >
+                        <ExternalLink size={10} />
+                        View
+                      </button>
+                      <button
+                        onClick={() => setDismissed(prev => new Set([...prev, alert.id]))}
+                        className="text-gray-300 hover:text-gray-500 text-[14px] leading-none transition-colors"
+                        title="Dismiss"
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                 ))
               )}

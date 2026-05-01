@@ -1,10 +1,13 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { Camera, Truck } from 'lucide-react'
-import AStarPanel from './AStarPanel'
+import AStarPanel      from './AStarPanel'
 import FleetStatusCards from './FleetStatusCards'
+import ActiveTrips     from './ActiveTrips'
+import YardCapacity    from './YardCapacity'
+import ProcessCard     from './ProcessCard'
 import type { OLMapHandle } from './OLMap'
 import { getMockFleet } from '@/lib/fleet/mockFleet'
 
@@ -40,17 +43,27 @@ const FORKLIFT_LEGEND = [
   { color: '#d97706', label: 'Warning'     },
 ]
 
-// Static data — replace with Supabase query later
 const FLEET = getMockFleet()
 
 interface Props {
   activeTab: string
   onTabChange: (tab: string) => void
+  initialUnitId?: string | null
 }
 
-export default function MapPlaceholder({ activeTab, onTabChange }: Props) {
-  const olMapRef   = useRef<OLMapHandle>(null)
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+export default function MapPlaceholder({ activeTab, onTabChange, initialUnitId }: Props) {
+  const olMapRef = useRef<OLMapHandle>(null)
+  const [selectedId, setSelectedId] = useState<string | null>(initialUnitId ?? null)
+
+  // Apply pre-selected unit from query params (Fase 6)
+  useEffect(() => {
+    if (!initialUnitId) return
+    setSelectedId(initialUnitId)
+    setTimeout(() => {
+      olMapRef.current?.highlightUnit(initialUnitId)
+      olMapRef.current?.centerOnUnit(initialUnitId)
+    }, 800)
+  }, [initialUnitId])
 
   const legend = activeTab === 'forklift' ? FORKLIFT_LEGEND : CAMERA_LEGEND
 
@@ -58,62 +71,78 @@ export default function MapPlaceholder({ activeTab, onTabChange }: Props) {
     const next = selectedId === id ? null : id
     setSelectedId(next)
     olMapRef.current?.highlightUnit(next)
+    if (next) olMapRef.current?.centerOnUnit(next)
   }
 
   return (
-    <div className="space-y-4">
-      {/* ── Map card — full width, protagonist ────────────────────────────── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        {/* Tabs + legend */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-4 pt-3 pb-0">
-          <div className="flex">
-            {TABS.map(({ id, label, Icon }) => (
-              <button key={id} onClick={() => onTabChange(id)}
-                className={`flex items-center gap-2 px-4 py-2 text-[13px] font-medium border-b-2 transition-colors mr-2 ${
-                  activeTab === id
-                    ? 'border-[#1a237e] text-[#1a237e]'
-                    : 'border-transparent text-gray-400 hover:text-gray-600'
-                }`}
-              >
-                <Icon size={14} />{label}
-              </button>
-            ))}
+    // ── 2-column grid: [map area] [right sidebar] ──────────────────────────
+    <div className="grid grid-cols-[1fr_280px] gap-4 items-start min-w-0">
+
+      {/* ── LEFT COLUMN: map + fleet units + process ──────────────────────── */}
+      <div className="space-y-4 min-w-0">
+
+        {/* Map card */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          {/* Tabs + legend */}
+          <div className="flex items-center justify-between border-b border-gray-200 px-4 pt-3 pb-0">
+            <div className="flex">
+              {TABS.map(({ id, label, Icon }) => (
+                <button key={id} onClick={() => onTabChange(id)}
+                  className={`flex items-center gap-2 px-4 py-2 text-[13px] font-medium border-b-2 transition-colors mr-2 ${
+                    activeTab === id
+                      ? 'border-[#1a237e] text-[#1a237e]'
+                      : 'border-transparent text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  <Icon size={14} />{label}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 pb-2 flex-wrap">
+              {legend.map(item => (
+                <div key={item.label} className="flex items-center gap-1">
+                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: item.color }} />
+                  <span className="text-[10px] text-gray-400 whitespace-nowrap">{item.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="flex items-center gap-3 pb-2">
-            {legend.map(item => (
-              <div key={item.label} className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full" style={{ background: item.color }} />
-                <span className="text-[10px] text-gray-400">{item.label}</span>
-              </div>
-            ))}
-          </div>
+
+          {/* A* planner — camera tab only */}
+          {activeTab === 'camera' && (
+            <div className="px-4 pt-3">
+              <AStarPanel
+                onRoute={ids => olMapRef.current?.drawRoute(ids)}
+                onClear={() => olMapRef.current?.clearRoute()}
+              />
+            </div>
+          )}
+
+          {/* Map */}
+          <OLMap
+            ref={olMapRef}
+            activeTab={activeTab}
+            selectedUnitId={selectedId}
+            onUnitClick={handleSelect}
+          />
         </div>
 
-        {/* A* planner — camera tab only */}
-        {activeTab === 'camera' && (
-          <div className="px-4 pt-3">
-            <AStarPanel
-              onRoute={ids => olMapRef.current?.drawRoute(ids)}
-              onClear={() => olMapRef.current?.clearRoute()}
-            />
-          </div>
-        )}
-
-        {/* Map — full width */}
-        <OLMap
-          ref={olMapRef}
-          activeTab={activeTab}
-          selectedUnitId={selectedId}
-          onUnitClick={handleSelect}
+        {/* Fleet Units — horizontal scroll cards below map */}
+        <FleetStatusCards
+          units={FLEET}
+          selectedId={selectedId}
+          onSelect={handleSelect}
         />
+
+        {/* Process — below fleet units */}
+        <ProcessCard />
       </div>
 
-      {/* ── Fleet Units — horizontal compact row below map ─────────────────── */}
-      <FleetStatusCards
-        units={FLEET}
-        selectedId={selectedId}
-        onSelect={handleSelect}
-      />
+      {/* ── RIGHT SIDEBAR: Active Trips + Yard Capacity + Real-Time Stats ─── */}
+      <div className="space-y-4">
+        <ActiveTrips activeTab={activeTab} />
+        <YardCapacity />
+      </div>
     </div>
   )
 }
