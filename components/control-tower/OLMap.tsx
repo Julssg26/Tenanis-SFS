@@ -202,7 +202,10 @@ const OLMap = forwardRef<OLMapHandle, OLMapProps>(function OLMap({ activeTab }, 
       const layer = new VectorLayer({ source, zIndex: 99 })
       map.addLayer(layer)
       astarLayer.current = layer
-      map.getView().fit(source.getExtent(), { padding: [60, 60, 60, 60], duration: 600, maxZoom: 17 })
+      const extent = source.getExtent()
+      if (extent) {
+        map.getView().fit(extent, { padding: [60, 60, 60, 60], duration: 600, maxZoom: 17 })
+      }
     },
     clearRoute() {
       const map = mapRef.current
