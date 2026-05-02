@@ -79,7 +79,7 @@ export default function ConversationSidebar({
       {/* Footer */}
       <div className="p-3 border-t border-gray-200">
         <p className="text-[10px] text-gray-400 text-center">
-          Claude API integration coming soon
+          Tenaris SFS · AI Assistant
         </p>
       </div>
     </aside>

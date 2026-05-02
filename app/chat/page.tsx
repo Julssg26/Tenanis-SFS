@@ -11,26 +11,44 @@ import {
   createConversation,
 } from '@/lib/chat/mockConversations'
 
-function msgId() { return Math.random().toString(36).slice(2, 10) }
+function uid() { return Math.random().toString(36).slice(2, 10) }
+
+// ── Call /api/ai endpoint ───────────────────────────────────────────────────────────
+async function fetchReply(
+  message: string,
+  history: Array<{ role: string; content: string }>
+): Promise<{ reply: string; source: 'simulated' | 'fallback'; reason?: string }> {
+  try {
+    const res = await fetch('/api/ai', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ message, history }),
+    })
+    if (!res.ok) throw new Error(`/api/ai returned ${res.status}`)
+    return await res.json() as { reply: string; source: 'simulated' | 'fallback'; reason?: string }
+  } catch (err) {
+    console.warn('[Chat] /api/ai failed, using local fallback:', err)
+    return { reply: getSimulatedReply(message), source: 'simulated' }
+  }
+}
 
 export default function ChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>(getInitialConversations)
   const [activeId,      setActiveId]      = useState<string | null>(conversations[0]?.id ?? null)
   const [isTyping,      setIsTyping]      = useState(false)
+  const [aiSource,      setAiSource]      = useState<'simulated' | 'fallback' | null>(null)
+  const [aiReason,      setAiReason]      = useState<string | null>(null)
 
   const activeConv = conversations.find(c => c.id === activeId) ?? null
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleNew = useCallback(() => {
-    const conv = createConversation('New conversation')
-    // New empty conv — don't add to list until first message
-    setConversations(prev => [{ ...conv, messages: [] }, ...prev])
+    const conv = { ...createConversation('New conversation'), messages: [] as Message[] }
+    setConversations(prev => [conv, ...prev])
     setActiveId(conv.id)
   }, [])
 
-  const handleSelect = useCallback((id: string) => {
-    setActiveId(id)
-  }, [])
+  const handleSelect = useCallback((id: string) => setActiveId(id), [])
 
   const handleDelete = useCallback((id: string) => {
     setConversations(prev => {
@@ -40,67 +58,67 @@ export default function ChatPage() {
     })
   }, [activeId])
 
-  const handleSend = useCallback((text: string) => {
+  const handleSend = useCallback(async (text: string) => {
     const now = new Date().toISOString()
+    const userMsg: Message = { id: uid(), role: 'user', content: text, createdAt: now }
 
-    const userMsg: Message = {
-      id: msgId(), role: 'user', content: text, createdAt: now,
-    }
-
-    // If no active conversation, create one
+    // ── Ensure we have an active conversation ────────────────────────────
     let targetId = activeId
     if (!targetId) {
-      const newConv = createConversation(text)
-      targetId = newConv.id
-      setConversations(prev => [{ ...newConv, messages: [userMsg] }, ...prev])
+      const conv = { ...createConversation(text), messages: [userMsg] }
+      targetId = conv.id
+      setConversations(prev => [conv, ...prev])
       setActiveId(targetId)
     } else {
-      // Append user message
       setConversations(prev => prev.map(c => {
         if (c.id !== targetId) return c
-        const isFirstMessage = c.messages.length === 0
+        const isFirst = c.messages.length === 0
         return {
           ...c,
-          title: isFirstMessage
-            ? (text.length > 40 ? text.slice(0, 40) + '…' : text)
-            : c.title,
-          preview: text,
+          title:    isFirst ? (text.length > 40 ? text.slice(0, 40) + '…' : text) : c.title,
+          preview:  text,
           updatedAt: now,
           messages: [...c.messages, userMsg],
         }
       }))
     }
 
-    // Simulate typing + reply
     setIsTyping(true)
-    const delay = 800 + Math.random() * 1200  // 0.8–2s for realism
+    const capturedId = targetId
 
-    setTimeout(() => {
-      const reply = getSimulatedReply(text)
-      const assistantMsg: Message = {
-        id: msgId(), role: 'assistant', content: reply, createdAt: new Date().toISOString(),
+    // ── Build history from current conversation for context ───────────────
+    const history = (activeConv?.messages ?? []).slice(-10).map(m => ({
+      role: m.role, content: m.content,
+    }))
+
+    // ── Call /api/ai (simulated local) ──────────────────────────────────────────────
+    const { reply, source, reason } = await fetchReply(text, history)
+
+    setAiSource(source)
+    setAiReason(reason ?? null)
+    setIsTyping(false)
+
+    const assistantMsg: Message = {
+      id: uid(), role: 'assistant', content: reply,
+      createdAt: new Date().toISOString(),
+    }
+
+    setConversations(prev => prev.map(c => {
+      if (c.id !== capturedId) return c
+      return {
+        ...c,
+        preview:   reply.slice(0, 60) + (reply.length > 60 ? '…' : ''),
+        updatedAt: new Date().toISOString(),
+        messages:  [...c.messages, assistantMsg],
       }
-      setIsTyping(false)
-      const capturedTarget = targetId
-      setConversations(prev => prev.map(c => {
-        if (c.id !== capturedTarget) return c
-        return {
-          ...c,
-          preview: reply.slice(0, 60) + '…',
-          updatedAt: new Date().toISOString(),
-          messages: [...c.messages, assistantMsg],
-        }
-      }))
-    }, delay)
-  }, [activeId])
+    }))
+  }, [activeId, activeConv])
 
   return (
-    // Full-height page — subtract topbar (56px) and AppShell padding
     <div
       className="flex bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
       style={{ height: 'calc(100vh - 56px - 48px)' }}
     >
-      {/* Left sidebar */}
       <ConversationSidebar
         conversations={conversations}
         activeId={activeId}
@@ -109,7 +127,6 @@ export default function ChatPage() {
         onDelete={handleDelete}
       />
 
-      {/* Main chat area */}
       <div className="flex flex-col flex-1 min-w-0">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 flex-shrink-0">
@@ -118,22 +135,16 @@ export default function ChatPage() {
               {activeConv?.title ?? 'AI Assistant'}
             </h1>
             <p className="text-[11px] text-gray-400">
-              Tenaris SFS · Simulated responses · Claude API coming soon
+              'Tenaris SFS · Simulated MVP Assistant'
             </p>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="text-[11px] text-gray-500">Online</span>
+            <span className="text-[11px] text-gray-500">Ready</span>
           </div>
         </div>
 
-        {/* Messages */}
-        <ChatMessages
-          messages={activeConv?.messages ?? []}
-          isTyping={isTyping}
-        />
-
-        {/* Input */}
+        <ChatMessages messages={activeConv?.messages ?? []} isTyping={isTyping} />
         <ChatInput onSend={handleSend} disabled={isTyping} />
       </div>
     </div>

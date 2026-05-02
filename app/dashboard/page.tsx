@@ -1,53 +1,36 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts'
-import SectionHeader from '@/components/ui/SectionHeader'
 import KpiCard from '@/components/ui/KpiCard'
 import FleetStateDonut from '@/components/dashboard/FleetStateDonut'
 import YardCongestion from '@/components/dashboard/YardCongestion'
 import { DASHBOARD_KPIS, ON_VS_EFFECTIVE, UTILIZATION_SHIFT } from '@/lib/mock-data'
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const [ready, setReady] = useState(false)
-
-  useEffect(() => {
-    // Guard: sin isAuth → volver al login
-    if (localStorage.getItem('isAuth') !== '1') {
-      router.replace('/')
-      return
-    }
-    setReady(true)
-    // Sin timeout de expiración
-  }, [router])
-
-  // Esperar confirmación de auth antes de renderizar
-  if (!ready) return null
-
   return (
-    <div>
-      <SectionHeader
-        title="Executive Overview"
-        subtitle="Real time fleet performance - Feb 28, 2026 - Shift 1"
-      />
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-[24px] font-bold text-[#1a237e]">Executive Overview</h1>
+        <p className="text-[13px] text-gray-500 mt-0.5">
+          Real-time fleet performance · Feb 28, 2026 · Shift 1
+        </p>
+      </div>
 
       {/* KPI Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {DASHBOARD_KPIS.map((kpi, i) => (
           <KpiCard key={i} {...kpi} />
         ))}
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-2 gap-4">
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
           <div className="text-[14px] font-semibold text-[#1a237e] mb-0.5">ON vs Effective Hours</div>
-          <div className="text-[11px] text-gray-500 mb-4">Hourly distribution day</div>
+          <div className="text-[11px] text-gray-500 mb-4">Hourly distribution — day view</div>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={ON_VS_EFFECTIVE} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <defs>
@@ -87,7 +70,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Bottom */}
       <div className="grid grid-cols-2 gap-4">
         <FleetStateDonut />
         <YardCongestion />
