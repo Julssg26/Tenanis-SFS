@@ -6,14 +6,14 @@ import type {
 
 // ─── Dashboard KPIs ───────────────────────────────────────────────────────────
 export const DASHBOARD_KPIS: KpiData[] = [
-  { value: '1,247 h', label: 'Total ON Hours',        subLabel: 'Current period',    delta: '-12%',   deltaType: 'down',   iconBg: 'bg-pink-500',   icon: 'Clock' },
-  { value: '986 h',   label: 'Effective Working Hours',subLabel: '79 % of total',     delta: '+5%',    deltaType: 'up',     iconBg: 'bg-green-600',  icon: 'Zap' },
-  { value: '18.3 %',  label: 'Idle Time',             subLabel: 'Target: <15 %',     delta: '-3.2%',  deltaType: 'down',   iconBg: 'bg-pink-500',   icon: 'PauseCircle' },
-  { value: '1,247 h', label: 'Total ON Hours',        subLabel: 'Current period',    delta: '+2.1%',  deltaType: 'up',     iconBg: 'bg-green-600',  icon: 'Timer' },
-  { value: '0.62',    label: 'Congestion Index',      subLabel: 'Moderate',          delta: '-0.08',  deltaType: 'down',   iconBg: 'bg-pink-500',   icon: 'AlertTriangle' },
-  { value: '2 Units', label: 'Maintenance Risk',      subLabel: 'Upcoming service',  delta: 'Stable', deltaType: 'stable', iconBg: 'bg-indigo-500', icon: 'Wrench' },
-  { value: '4,821 L', label: 'Energy Estimate',       subLabel: 'Diesel consumed',   delta: '-8%',    deltaType: 'down',   iconBg: 'bg-pink-500',   icon: 'Fuel' },
-  { value: '17.2 %',  label: 'Hours Reduction',       subLabel: 'Target: 20%',       delta: '+2.5%',  deltaType: 'up',     iconBg: 'bg-green-600',  icon: 'TrendingDown' },
+  { value: '1,247 h', label: 'Total ON Hours',         subLabel: 'Current period',    delta: '-12%',   deltaType: 'down',   iconBg: 'bg-pink-500',   icon: 'Clock' },
+  { value: '986 h',   label: 'Effective Working Hours', subLabel: '79 % of total',     delta: '+5%',    deltaType: 'up',     iconBg: 'bg-green-600',  icon: 'Zap' },
+  { value: '18.3 %',  label: 'Idle Time',              subLabel: 'Target: <15 %',     delta: '-3.2%',  deltaType: 'down',   iconBg: 'bg-pink-500',   icon: 'PauseCircle' },
+  { value: '1,247 h', label: 'Total ON Hours',         subLabel: 'Current period',    delta: '+2.1%',  deltaType: 'up',     iconBg: 'bg-green-600',  icon: 'RefreshCw' },
+  { value: '0.62',    label: 'Congestion Index',       subLabel: 'Moderate',          delta: '-0.08',  deltaType: 'down',   iconBg: 'bg-pink-500',   icon: 'AlertTriangle' },
+  { value: '2 Units', label: 'Maintenance Risk',       subLabel: 'Upcoming service',  delta: 'Stable', deltaType: 'stable', iconBg: 'bg-indigo-500', icon: 'Wrench' },
+  { value: '4,821 L', label: 'Energy Estimate',        subLabel: 'Diesel consumed',   delta: '-8%',    deltaType: 'down',   iconBg: 'bg-pink-500',   icon: 'Fuel' },
+  { value: '17.2 %',  label: 'Hours Reduction',        subLabel: 'Target: 20%',       delta: '+2.5%',  deltaType: 'up',     iconBg: 'bg-green-600',  icon: 'TrendingDown' },
 ]
 
 // ─── ON vs Effective Hours chart data ─────────────────────────────────────────
