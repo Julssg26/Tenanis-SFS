@@ -75,11 +75,14 @@ export default function MapPlaceholder({ activeTab, onTabChange, initialUnitId }
   }
 
   return (
-    // ── 2-column grid: [map area] [right sidebar] ──────────────────────────
-    <div className="grid grid-cols-[1fr_280px] gap-4 items-start min-w-0">
+    // ── Full-width wrapper ───────────────────────────────────────────────────
+    <div className="space-y-4 min-w-0">
 
-      {/* ── LEFT COLUMN: map + fleet units + process ──────────────────────── */}
-      <div className="space-y-4 min-w-0">
+      {/* ── 2-column grid: map area + right sidebar ─────────────────────── */}
+      <div className="grid grid-cols-[1fr_280px] gap-4 items-start min-w-0">
+
+        {/* Map column */}
+        <div className="space-y-0 min-w-0">
 
         {/* Map card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -127,22 +130,25 @@ export default function MapPlaceholder({ activeTab, onTabChange, initialUnitId }
           />
         </div>
 
-        {/* Fleet Units — horizontal scroll cards below map */}
-        <FleetStatusCards
-          units={FLEET}
-          selectedId={selectedId}
-          onSelect={handleSelect}
-        />
+        </div>{/* end map column */}
 
-        {/* Process — below fleet units */}
-        <ProcessCard />
-      </div>
+        {/* ── RIGHT SIDEBAR ───────────────────────────────────────────── */}
+        <div className="space-y-4">
+          <ActiveTrips activeTab={activeTab} />
+          <YardCapacity />
+        </div>
+      </div>{/* end 2-col grid */}
 
-      {/* ── RIGHT SIDEBAR: Active Trips + Yard Capacity + Real-Time Stats ─── */}
-      <div className="space-y-4">
-        <ActiveTrips activeTab={activeTab} />
-        <YardCapacity />
-      </div>
+      {/* ── Fleet Units — full width below map grid ──────────────────────── */}
+      <FleetStatusCards
+        units={FLEET}
+        selectedId={selectedId}
+        onSelect={handleSelect}
+      />
+
+      {/* ── Process — full width below fleet units ────────────────────────── */}
+      <ProcessCard />
+
     </div>
   )
 }

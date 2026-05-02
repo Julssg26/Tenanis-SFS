@@ -1,7 +1,4 @@
 // lib/fleet/mockFleet.ts
-// Replace getMockFleet() with a Supabase query later:
-//   const { data } = await supabase.from('fleet_units').select('*')
-
 import type { FleetUnit } from './types'
 
 export function getMockFleet(): FleetUnit[] {
@@ -32,13 +29,6 @@ export function getMockFleet(): FleetUnit[] {
       coordinates: [-96.2350, 19.1810],
       currentZone: 'Inspection', operatorName: '—',
       utilization: 0, maintenanceRisk: 95, fuelLevel: 100,
-      activeRoute: null, lastUpdated: new Date().toISOString(),
-    },
-    {
-      id: 'SH-01', name: 'Shuttle 01', type: 'shuttle', status: 'idle',
-      coordinates: [-96.2315, 19.1840],
-      currentZone: 'Blue Yard', operatorName: 'Ana Guzmán',
-      utilization: 22, maintenanceRisk: 10, fuelLevel: 95,
       activeRoute: null, lastUpdated: new Date().toISOString(),
     },
   ]

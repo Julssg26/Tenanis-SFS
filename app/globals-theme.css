@@ -1,0 +1,119 @@
+/* ── Theme system — Light (default) and Dark only ─────────────────────────── */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* ── DARK MODE — comprehensive coverage for all Tailwind classes used ────── */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] body {
+  background-color: #0f1117 !important;
+  color: #f1f5f9 !important;
+}
+
+/* App shell background */
+[data-theme="dark"] .min-h-screen,
+[data-theme="dark"] .bg-\[#f1f3f7\] {
+  background-color: #0f1117 !important;
+}
+
+/* Cards and white backgrounds */
+[data-theme="dark"] .bg-white {
+  background-color: #1c1f2e !important;
+  border-color: #2d3250 !important;
+}
+
+/* Sidebar */
+[data-theme="dark"] aside {
+  background-color: #13161f !important;
+  border-color: #2d3250 !important;
+}
+
+/* Gray backgrounds */
+[data-theme="dark"] .bg-gray-50,
+[data-theme="dark"] .bg-gray-100 {
+  background-color: #1a1d2a !important;
+}
+
+[data-theme="dark"] .bg-\[#e8eaf6\],
+[data-theme="dark"] .bg-\[#e8f5e9\] {
+  background-color: #1e2235 !important;
+}
+
+/* Text */
+[data-theme="dark"] .text-gray-900,
+[data-theme="dark"] .text-gray-800,
+[data-theme="dark"] .text-gray-700 {
+  color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .text-gray-600,
+[data-theme="dark"] .text-gray-500,
+[data-theme="dark"] .text-gray-400 {
+  color: #94a3b8 !important;
+}
+
+/* Borders */
+[data-theme="dark"] .border-gray-100,
+[data-theme="dark"] .border-gray-200 {
+  border-color: #2d3250 !important;
+}
+
+[data-theme="dark"] .border-gray-50 {
+  border-color: #252840 !important;
+}
+
+/* Inputs, selects, textareas */
+[data-theme="dark"] input:not([type="range"]),
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: #1c1f2e !important;
+  color: #f1f5f9 !important;
+  border-color: #2d3250 !important;
+}
+
+/* Hover states */
+[data-theme="dark"] .hover\:bg-gray-50:hover,
+[data-theme="dark"] .hover\:bg-gray-100:hover {
+  background-color: #252840 !important;
+}
+
+/* Dividers */
+[data-theme="dark"] .divide-gray-50 > * + *,
+[data-theme="dark"] .divide-gray-100 > * + * {
+  border-color: #2d3250 !important;
+}
+
+/* Dark card for things like bg-gray-800 badges */
+[data-theme="dark"] .bg-gray-800 {
+  background-color: #334155 !important;
+}
+
+/* ── Apps page dark mode ─────────────────────────────────────────────────── */
+[data-theme="dark"] .bg-gray-100 {
+  background-color: #1e2235 !important;
+}
+
+[data-theme="dark"] .hover\:bg-gray-200:hover {
+  background-color: #252840 !important;
+}
+
+/* AppCard label text */
+[data-theme="dark"] .text-\[\#1a237e\] {
+  color: #93aff7 !important;
+}
+
+/* subLabel in AppCard */
+[data-theme="dark"] .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+/* Apps page outer background */
+[data-theme="dark"] .bg-\[#e8eaf0\],
+[data-theme="dark"] .hover\:bg-\[#dde0ea\]:hover {
+  background-color: #1e2235 !important;
+}

@@ -6,7 +6,7 @@ interface AppCardProps {
 
 export default function AppCard({ icon, label, sublabel }: AppCardProps) {
   return (
-    <div className="flex items-center gap-3 bg-[#e8eaf0] hover:bg-[#dde0ea] transition-colors rounded-xl px-4 py-2.5 cursor-pointer select-none">
+    <div className="flex items-center gap-3 bg-gray-100 hover:bg-gray-200 transition-colors rounded-xl px-4 py-2.5 cursor-pointer select-none">
       {/* Icon — 28px, matches Figma sizing */}
       <div className="flex-shrink-0 w-7 h-7 flex items-center justify-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}

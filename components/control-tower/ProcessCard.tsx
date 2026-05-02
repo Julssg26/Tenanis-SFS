@@ -21,9 +21,9 @@ export default function ProcessCard() {
       <div className="space-y-3">
         {PROCESS_ITEMS.map(item => (
           <div key={item.name}>
-            <div className="flex justify-between text-[12px] text-gray-600 mb-1">
+            <div className="flex justify-between text-[11px] text-gray-600 mb-1">
               <span>{item.name}</span>
-              <span className="font-semibold">{item.pct} %</span>
+              <span className="font-semibold">{item.pct}%</span>
             </div>
             <Bar pct={item.pct} />
           </div>
