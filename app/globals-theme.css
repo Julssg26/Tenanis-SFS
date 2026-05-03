@@ -102,18 +102,20 @@
   background-color: #252840 !important;
 }
 
-/* AppCard label text */
-[data-theme="dark"] .text-\[\#1a237e\] {
-  color: #93aff7 !important;
+/* ── Apps dark mode — via semantic class names (no escaping issues) ────── */
+[data-theme="dark"] .app-card {
+  background-color: #1e2235 !important;
+  border: 1px solid #2d3250 !important;
 }
-
-/* subLabel in AppCard */
-[data-theme="dark"] .text-gray-500 {
+[data-theme="dark"] .app-card:hover {
+  background-color: #252840 !important;
+}
+[data-theme="dark"] .app-card-label {
+  color: #c7d7fd !important;
+}
+[data-theme="dark"] .app-card-sub {
   color: #94a3b8 !important;
 }
-
-/* Apps page outer background */
-[data-theme="dark"] .bg-\[#e8eaf0\],
-[data-theme="dark"] .hover\:bg-\[#dde0ea\]:hover {
-  background-color: #1e2235 !important;
+[data-theme="dark"] .app-card-icon {
+  opacity: 0.85;
 }
