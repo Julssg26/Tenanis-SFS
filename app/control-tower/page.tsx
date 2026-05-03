@@ -48,7 +48,7 @@ function ControlTowerInner() {
       {/* Header */}
       <div className="mb-4">
         <h1 className="text-[24px] font-bold text-[#1a237e]">Control Tower</h1>
-        <p className="text-[13px] text-gray-500 mt-0.5">
+        <p className="text-[13px] text-green-600 font-medium mt-0.5">
           Live industrial operations — Tenaris Tamsa
         </p>
       </div>

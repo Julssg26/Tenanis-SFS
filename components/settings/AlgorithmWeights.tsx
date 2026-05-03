@@ -23,13 +23,13 @@ export default function AlgorithmWeights() {
           <div key={w.key}>
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-[13px] text-gray-700">{w.label}</span>
-              <span className="text-[13px] font-bold text-[#1a237e]">{w.value}%</span>
+              <span className="text-[13px] font-bold text-green-600">{w.value}%</span>
             </div>
             <input
               type="range" min={0} max={60} step={1}
               value={w.value}
               onChange={e => update(w.key, Number(e.target.value))}
-              className="w-full h-1.5 accent-[#1a237e] cursor-pointer"
+              className="w-full h-1.5 accent-green-600 cursor-pointer"
             />
           </div>
         ))}

@@ -90,7 +90,7 @@ export default function DriversPage() {
         <h1 className="text-[26px] font-bold text-gray-900 leading-tight">
           Planned Operations
         </h1>
-        <p className="text-[13px] text-gray-500 mt-0.5">
+        <p className="text-[13px] text-green-600 font-medium mt-0.5">
           Daily internal fleet operations — Tenaris Tamsa
         </p>
       </div>

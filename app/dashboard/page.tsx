@@ -14,7 +14,7 @@ export default function DashboardPage() {
     <div className="space-y-5">
       <div>
         <h1 className="text-[24px] font-bold text-[#1a237e]">Executive Overview</h1>
-        <p className="text-[13px] text-gray-500 mt-0.5">
+        <p className="text-[13px] text-green-600 font-medium mt-0.5">
           Real-time fleet performance · Feb 28, 2026 · Shift 1
         </p>
       </div>

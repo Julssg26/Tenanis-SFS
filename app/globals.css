@@ -1,5 +1,12 @@
+/* Font must be imported before @tailwind to avoid build errors */
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap');
 @import './globals-theme.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Base typography — Barlow matches Figma design ───────────────────────── */
+html, body {
+  font-family: 'Barlow', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
