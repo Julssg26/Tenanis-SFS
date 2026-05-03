@@ -1,36 +1,62 @@
 'use client'
 
 import { useState } from 'react'
-import { YARD_LABELS, YARD_GRAPH } from '@/lib/routing/yardGraph'
+import { YARD_LABELS, YARD_GRAPH, ZONE_NODE_IDS, nearestNode } from '@/lib/routing/yardGraph'
 import { aStar } from '@/lib/routing/aStar'
+import { getMockFleet } from '@/lib/fleet/mockFleet'
 import { Navigation, RotateCcw } from 'lucide-react'
 
 interface AStarPanelProps {
-  /** Called when a valid path is computed */
   onRoute: (nodeIds: string[]) => void
-  /** Called when the user clears the route */
   onClear: () => void
 }
 
-const NODE_IDS = Object.keys(YARD_LABELS)
+// Destination zone options (no intersection nodes in UI)
+const DEST_IDS = ZONE_NODE_IDS
+
+// Fleet units for origin selector
+const FLEET = getMockFleet()
 
 export default function AStarPanel({ onRoute, onClear }: AStarPanelProps) {
-  const [origin, setOrigin]      = useState<string>('LOADING_BAY')
-  const [dest,   setDest]        = useState<string>('MOTU')
-  const [result, setResult]      = useState<string | null>(null)
-  const [error,  setError]       = useState<string | null>(null)
+  const [unitId, setUnitId] = useState<string>(FLEET[0]?.id ?? '')
+  const [dest,   setDest  ] = useState<string>('MOTU')
+  const [result, setResult] = useState<string | null>(null)
+  const [error,  setError ] = useState<string | null>(null)
 
   function compute() {
     setError(null)
-    const path = aStar(YARD_GRAPH, origin, dest)
+
+    // Find selected unit and its current coordinates
+    const unit = FLEET.find(u => u.id === unitId)
+    if (!unit) {
+      setError('No unit selected.')
+      return
+    }
+
+    const [lon, lat] = unit.coordinates
+
+    // Snap unit position to nearest road node
+    const originNode = nearestNode(lon, lat)
+
+    // Run A* from nearest road node to destination zone
+    const path = aStar(YARD_GRAPH, originNode, dest)
+
     if (!path || path.length < 2) {
-      setError('No route found between selected zones.')
+      setError(`No route found from ${unit.name} to ${YARD_LABELS[dest]}.`)
       setResult(null)
       onClear()
       return
     }
-    const labels = path.map(id => YARD_LABELS[id]).join(' → ')
-    setResult(labels)
+
+    // Build human-readable route label (skip intermediate intersection nodes)
+    const readableStops = path
+      .filter(id => ZONE_NODE_IDS.includes(id) || id === originNode)
+      .map(id => YARD_LABELS[id] ?? id)
+    const label = readableStops.length > 1
+      ? readableStops.join(' → ')
+      : `${unit.name} → ${YARD_LABELS[dest]}`
+
+    setResult(`${unit.name}: ${label}`)
     onRoute(path)
   }
 
@@ -48,23 +74,25 @@ export default function AStarPanel({ onRoute, onClear }: AStarPanelProps) {
       </div>
 
       <div className="flex flex-wrap items-end gap-3">
-        {/* Origin */}
+        {/* Unit / Equipment selector (origin) */}
         <div className="flex flex-col gap-1">
-          <label className="text-[11px] text-gray-500 font-medium">Origin</label>
+          <label className="text-[11px] text-gray-500 font-medium">Unit / Equipment</label>
           <select
-            value={origin}
-            onChange={e => { setOrigin(e.target.value); clear() }}
+            value={unitId}
+            onChange={e => { setUnitId(e.target.value); clear() }}
             className="text-[12px] border border-gray-200 rounded-lg px-2 py-1.5 text-gray-700 bg-white outline-none focus:border-[#1a237e]"
           >
-            {NODE_IDS.map(id => (
-              <option key={id} value={id}>{YARD_LABELS[id]}</option>
+            {FLEET.map(u => (
+              <option key={u.id} value={u.id}>
+                {u.name} — {u.currentZone}
+              </option>
             ))}
           </select>
         </div>
 
         <span className="text-gray-400 text-[13px] mb-1.5">→</span>
 
-        {/* Destination */}
+        {/* Destination zone */}
         <div className="flex flex-col gap-1">
           <label className="text-[11px] text-gray-500 font-medium">Destination</label>
           <select
@@ -72,13 +100,13 @@ export default function AStarPanel({ onRoute, onClear }: AStarPanelProps) {
             onChange={e => { setDest(e.target.value); clear() }}
             className="text-[12px] border border-gray-200 rounded-lg px-2 py-1.5 text-gray-700 bg-white outline-none focus:border-[#1a237e]"
           >
-            {NODE_IDS.map(id => (
+            {DEST_IDS.map(id => (
               <option key={id} value={id}>{YARD_LABELS[id]}</option>
             ))}
           </select>
         </div>
 
-        {/* Compute */}
+        {/* Calculate */}
         <button
           onClick={compute}
           className="flex items-center gap-1.5 bg-[#1a237e] text-white text-[12px] font-semibold px-3 py-1.5 rounded-lg hover:bg-[#283593] transition-colors mb-0.5"
@@ -113,3 +141,4 @@ export default function AStarPanel({ onRoute, onClear }: AStarPanelProps) {
     </div>
   )
 }
+
