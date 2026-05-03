@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Settings2, User, TrendingUp, ArrowRight, Search } from 'lucide-react'
+import { Settings2, User, TrendingUp, ArrowRight, Search, Gauge } from 'lucide-react'
 import {
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight
 } from 'lucide-react'
 import SectionHeader from '@/components/ui/SectionHeader'
 import EquipmentRanking from '@/components/performance/EquipmentRanking'
+import AssetPerformance from '@/components/performance/AssetPerformance'
 import DataTable from '@/components/ui/DataTable'
 import Badge from '@/components/ui/Badge'
 import type { Column } from '@/components/ui/DataTable'
@@ -16,10 +17,13 @@ import clsx from 'clsx'
 
 // ─── Tabs config ──────────────────────────────────────────────────────────────
 const TABS = [
-  { id: 'equipment', label: 'Equipment Performance', Icon: Settings2 },
+  { id: 'equipment', label: 'General View', Icon: Settings2 },
+  { id: 'asset',     label: 'Asset Performance', Icon: Gauge },
   { id: 'operator',  label: 'Operator Performance',  Icon: User      },
   { id: 'flow',      label: 'Flow Analysis',          Icon: TrendingUp },
-]
+] as const
+
+type PerformanceTab = typeof TABS[number]['id']
 
 // ─── Equipment tab helpers ────────────────────────────────────────────────────
 function getIdleBadge(idle: number) {
@@ -192,7 +196,7 @@ function FlowAnalysisTab() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function PerformancePage() {
-  const [activeTab, setActiveTab] = useState('equipment')
+  const [activeTab, setActiveTab] = useState<PerformanceTab>('equipment')
 
   return (
     <div>
@@ -234,6 +238,7 @@ export default function PerformancePage() {
         </>
       )}
 
+      {activeTab === 'asset'    && <AssetPerformance />}
       {activeTab === 'operator' && <OperatorPerfTab />}
       {activeTab === 'flow'     && <FlowAnalysisTab />}
     </div>
