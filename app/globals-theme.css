@@ -119,3 +119,25 @@
 [data-theme="dark"] .app-card-icon {
   opacity: 0.85;
 }
+
+/* ── Settings: Dark Mode theme button readability ────────────────────────── */
+[data-theme="dark"] .theme-btn-active {
+  background-color: #1e2235 !important;
+  border-color: #6b8ef7 !important;
+}
+[data-theme="dark"] .theme-btn-label {
+  color: #f1f5f9 !important;
+}
+
+/* ── Sidebar: custom PNG icons (Apps, AI Chat) in dark mode ──────────────── */
+/* Inactive icons: invert to white/light so they're visible on dark sidebar */
+[data-theme="dark"] .sidebar-icon-inactive {
+  filter: brightness(0) invert(1) opacity(0.55) !important;
+}
+/* Active icons: already white from inline style — no change needed */
+
+/* ── Settings: Light Mode preview icon visible in dark mode ─────────────── */
+[data-theme="dark"] .light-mode-preview {
+  background-color: #e2e8f0 !important;  /* keep light background */
+  color: #1e293b !important;              /* dark icon visible on light bg */
+}

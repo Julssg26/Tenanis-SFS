@@ -39,21 +39,21 @@ export default function SettingsPage() {
         <div className="text-[14px] font-semibold text-gray-800 mb-3">Appearance</div>
         <div className="grid grid-cols-2 gap-3 max-w-sm">
           {([
-            { id: 'light' as Theme, label: 'Light Mode', Icon: Sun,  preview: 'bg-[#f1f3f7] text-gray-900' },
+            { id: 'light' as Theme, label: 'Light Mode', Icon: Sun,  preview: 'bg-[#f1f3f7] text-gray-900 light-mode-preview' },
             { id: 'dark'  as Theme, label: 'Dark Mode',  Icon: Moon, preview: 'bg-[#0f1117] text-slate-100' },
           ] as const).map(({ id, label, Icon, preview }) => {
             const active = theme === id
             return (
               <button key={id} onClick={() => selectTheme(id)}
                 className={`flex items-center gap-3 rounded-xl border-2 p-3 text-left transition-all ${
-                  active ? 'border-[#1a237e] bg-[#e8eaf6]' : 'border-gray-200 hover:border-gray-300 bg-white'
+                  active ? 'theme-btn-active border-[#1a237e] bg-[#e8eaf6]' : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${preview}`}>
                   <Icon size={16} />
                 </div>
                 <div>
-                  <div className="text-[13px] font-semibold text-gray-800">{label}</div>
+                  <div className="theme-btn-label text-[13px] font-semibold text-gray-800">{label}</div>
                   {active && <div className="text-[10px] text-[#1a237e] font-medium">Active</div>}
                 </div>
               </button>

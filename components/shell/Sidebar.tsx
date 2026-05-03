@@ -29,10 +29,11 @@ function CustomIcon({
       alt={alt}
       width={22}
       height={22}
+      className={active ? 'sidebar-icon-active' : 'sidebar-icon-inactive'}
       style={{
         objectFit: 'contain',
         display: 'block',
-        // Active (blue bg): make white  |  Inactive (white bg): make dark gray
+        // Active (blue bg): white | Inactive light: dark gray | Inactive dark: handled by CSS
         filter: active
           ? 'brightness(0) invert(1)'
           : 'brightness(0) invert(0) opacity(0.5)',
