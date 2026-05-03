@@ -2,12 +2,14 @@
 
 import dynamic from 'next/dynamic'
 import { useRef, useState, useEffect } from 'react'
-import { Camera, Truck } from 'lucide-react'
-import AStarPanel      from './AStarPanel'
-import FleetStatusCards from './FleetStatusCards'
-import ActiveTrips     from './ActiveTrips'
-import YardCapacity    from './YardCapacity'
-import ProcessCard     from './ProcessCard'
+import { Camera, Truck, Thermometer, Layers } from 'lucide-react'
+import PlantHeatmapPanel  from '@/components/simulator/PlantHeatmapPanel'
+import TubeStackingPanel  from '@/components/simulator/TubeStackingPanel'
+import AStarPanel         from './AStarPanel'
+import FleetStatusCards   from './FleetStatusCards'
+import ActiveTrips        from './ActiveTrips'
+import YardCapacity       from './YardCapacity'
+import ProcessCard        from './ProcessCard'
 import type { OLMapHandle } from './OLMap'
 import { getMockFleet } from '@/lib/fleet/mockFleet'
 
@@ -27,8 +29,10 @@ const OLMap = dynamic(() => import('./OLMap'), {
 })
 
 const TABS = [
-  { id: 'camera',   label: 'Camera Monitor',   Icon: Camera },
-  { id: 'forklift', label: 'Forklift Tracking', Icon: Truck  },
+  { id: 'camera',   label: 'Truck Tracking',    Icon: Camera      },
+  { id: 'forklift', label: 'Forklift Tracking', Icon: Truck       },
+  { id: 'heatmap',  label: 'Trips Simulators',  Icon: Thermometer },
+  { id: 'stacking', label: 'Tube Stacking',     Icon: Layers      },
 ]
 const CAMERA_LEGEND = [
   { color: '#3b82f6', label: 'Warehouse → MOTU'    },
@@ -46,8 +50,8 @@ const FORKLIFT_LEGEND = [
 const FLEET = getMockFleet()
 
 interface Props {
-  activeTab: string
-  onTabChange: (tab: string) => void
+  activeTab:     string
+  onTabChange:   (tab: string) => void
   initialUnitId?: string | null
 }
 
@@ -55,7 +59,6 @@ export default function MapPlaceholder({ activeTab, onTabChange, initialUnitId }
   const olMapRef = useRef<OLMapHandle>(null)
   const [selectedId, setSelectedId] = useState<string | null>(initialUnitId ?? null)
 
-  // Apply pre-selected unit from query params (Fase 6)
   useEffect(() => {
     if (!initialUnitId) return
     setSelectedId(initialUnitId)
@@ -65,7 +68,8 @@ export default function MapPlaceholder({ activeTab, onTabChange, initialUnitId }
     }, 800)
   }, [initialUnitId])
 
-  const legend = activeTab === 'forklift' ? FORKLIFT_LEGEND : CAMERA_LEGEND
+  const isMapTab = activeTab === 'camera' || activeTab === 'forklift'
+  const legend   = activeTab === 'forklift' ? FORKLIFT_LEGEND : CAMERA_LEGEND
 
   function handleSelect(id: string) {
     const next = selectedId === id ? null : id
@@ -74,79 +78,103 @@ export default function MapPlaceholder({ activeTab, onTabChange, initialUnitId }
     if (next) olMapRef.current?.centerOnUnit(next)
   }
 
-  return (
-    // ── Full-width wrapper ───────────────────────────────────────────────────
-    <div className="space-y-4 min-w-0">
-
-      {/* ── 2-column grid: map area + right sidebar ─────────────────────── */}
-      <div className="grid grid-cols-[1fr_280px] gap-4 items-start min-w-0">
-
-        {/* Map column */}
-        <div className="space-y-0 min-w-0">
-
-        {/* Map card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          {/* Tabs + legend */}
-          <div className="flex items-center justify-between border-b border-gray-200 px-4 pt-3 pb-0">
-            <div className="flex">
-              {TABS.map(({ id, label, Icon }) => (
-                <button key={id} onClick={() => onTabChange(id)}
-                  className={`flex items-center gap-2 px-4 py-2 text-[13px] font-medium border-b-2 transition-colors mr-2 ${
-                    activeTab === id
-                      ? 'border-[#1a237e] text-[#1a237e]'
-                      : 'border-transparent text-gray-400 hover:text-gray-600'
-                  }`}
-                >
-                  <Icon size={14} />{label}
-                </button>
-              ))}
-            </div>
-            <div className="flex items-center gap-2 pb-2 flex-wrap">
-              {legend.map(item => (
-                <div key={item.label} className="flex items-center gap-1">
-                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: item.color }} />
-                  <span className="text-[10px] text-gray-400 whitespace-nowrap">{item.label}</span>
-                </div>
-              ))}
-            </div>
+  // ── Shared map card ────────────────────────────────────────────────────────
+  const mapCard = (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="flex items-center justify-between border-b border-gray-200 px-4 pt-3 pb-0">
+        <div className="flex">
+          {TABS.map(({ id, label, Icon }) => (
+            <button key={id} onClick={() => onTabChange(id)}
+              className={`flex items-center gap-2 px-4 py-2 text-[13px] font-medium border-b-2 transition-colors mr-2 ${
+                activeTab === id
+                  ? 'border-[#1a237e] text-[#1a237e]'
+                  : 'border-transparent text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              <Icon size={14} />{label}
+            </button>
+          ))}
+        </div>
+        {isMapTab && (
+          <div className="flex items-center gap-2 pb-2 flex-wrap">
+            {legend.map(item => (
+              <div key={item.label} className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: item.color }} />
+                <span className="text-[10px] text-gray-400 whitespace-nowrap">{item.label}</span>
+              </div>
+            ))}
           </div>
+        )}
+      </div>
 
-          {/* A* planner — camera tab only */}
-          {activeTab === 'camera' && (
-            <div className="px-4 pt-3">
-              <AStarPanel
-                onRoute={ids => olMapRef.current?.drawRoute(ids)}
-                onClear={() => olMapRef.current?.clearRoute()}
-              />
-            </div>
-          )}
-
-          {/* Map */}
-          <OLMap
-            ref={olMapRef}
-            activeTab={activeTab}
-            selectedUnitId={selectedId}
-            onUnitClick={handleSelect}
+      {activeTab === 'camera' && (
+        <div className="px-4 pt-3">
+          <AStarPanel
+            onRoute={ids => olMapRef.current?.drawRoute(ids)}
+            onClear={() => olMapRef.current?.clearRoute()}
           />
         </div>
+      )}
 
-        </div>{/* end map column */}
+      {isMapTab && (
+        <OLMap
+          ref={olMapRef}
+          activeTab={activeTab}
+          selectedUnitId={selectedId}
+          onUnitClick={handleSelect}
+        />
+      )}
 
-        {/* ── RIGHT SIDEBAR ───────────────────────────────────────────── */}
-        <div className="space-y-4">
+      {activeTab === 'heatmap'  && <PlantHeatmapPanel />}
+      {activeTab === 'stacking' && <TubeStackingPanel />}
+    </div>
+  )
+
+  // ── Simulator tabs ─────────────────────────────────────────────────────────
+  if (!isMapTab) {
+    return <div className="min-w-0">{mapCard}</div>
+  }
+
+  // ── Operational tabs (Truck + Forklift) ────────────────────────────────────
+  //
+  //  Structure matching the reference image:
+  //
+  //  ┌─────────────────────────── MAP ──────────────────────┐ ┌─ SIDEBAR ─┐
+  //  │  (mapa satelital + tabs + A* si aplica)               │ │ ActiveT.  │
+  //  └──────────────────────────────────────────────────────┘ │ Yard Cap. │
+  //  ┌──────────────── FLEET UNITS (full width) ─────────────────────────────┐
+  //  └───────────────────────────────────────────────────────────────────────┘
+  //  ┌──────────────── PROCESS (full width) ─────────────────────────────────┐
+  //  └───────────────────────────────────────────────────────────────────────┘
+  //
+  // Key: the sidebar is ONLY next to the map. Fleet Units and Process are
+  // completely outside any column structure — they are block-level children
+  // of the outer wrapper and naturally take 100% width.
+  //
+  return (
+    <div className="space-y-4 min-w-0">
+
+      {/* Row 1: map + sidebar side by side */}
+      <div className="flex gap-4 items-start min-w-0">
+        {/* Map — takes all remaining width */}
+        <div className="min-w-0" style={{ flex: '1 1 0%' }}>
+          {mapCard}
+        </div>
+        {/* Sidebar — fixed width, only here in row 1 */}
+        <div className="space-y-4 flex-shrink-0" style={{ width: '280px' }}>
           <ActiveTrips activeTab={activeTab} />
           <YardCapacity />
         </div>
-      </div>{/* end 2-col grid */}
+      </div>
 
-      {/* ── Fleet Units — full width below map grid ──────────────────────── */}
+      {/* Row 2: Fleet Units — naturally 100% of outer wrapper width */}
       <FleetStatusCards
         units={FLEET}
         selectedId={selectedId}
         onSelect={handleSelect}
       />
 
-      {/* ── Process — full width below fleet units ────────────────────────── */}
+      {/* Row 3: Process — naturally 100% of outer wrapper width */}
       <ProcessCard />
 
     </div>

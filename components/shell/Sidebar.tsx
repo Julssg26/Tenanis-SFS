@@ -7,33 +7,22 @@ import {
   Antenna,
   BarChart2,
   HeartPulse,
-  Cpu,
-  Users,
+  ClipboardList,
   Settings,
 } from 'lucide-react'
 
-// Shared custom icon — works for both Apps (PNG) and AI Chat (PNG converted from ICO)
+// Custom icon for PNG assets (Apps, AI Chat)
 function CustomIcon({
-  src,
-  alt,
-  active,
-}: {
-  src: string
-  alt: string
-  active: boolean
-}) {
+  src, alt, active,
+}: { src: string; alt: string; active: boolean }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={src}
-      alt={alt}
-      width={22}
-      height={22}
+      src={src} alt={alt} width={22} height={22}
       className={active ? 'sidebar-icon-active' : 'sidebar-icon-inactive'}
       style={{
         objectFit: 'contain',
         display: 'block',
-        // Active (blue bg): white | Inactive light: dark gray | Inactive dark: handled by CSS
         filter: active
           ? 'brightness(0) invert(1)'
           : 'brightness(0) invert(0) opacity(0.5)',
@@ -42,13 +31,13 @@ function CustomIcon({
   )
 }
 
+// All hrefs must be unique — Simulator removed (content now lives in Control Tower tabs)
 const NAV_ITEMS = [
   { label: 'Dashboard',     href: '/dashboard',     Icon: LayoutDashboard },
   { label: 'Control Tower', href: '/control-tower', Icon: Antenna         },
   { label: 'Performance',   href: '/performance',   Icon: BarChart2       },
   { label: 'Fleet Health',  href: '/fleet-health',  Icon: HeartPulse      },
-  { label: 'Simulator',     href: '/simulator',     Icon: Cpu             },
-  { label: 'Drivers',       href: '/drivers',       Icon: Users           },
+  { label: 'Tasks',         href: '/drivers',       Icon: ClipboardList   },
   { label: 'Settings',      href: '/settings',      Icon: Settings        },
 ]
 
@@ -58,14 +47,14 @@ const OFF  = 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
 
 export default function Sidebar() {
   const pathname = usePathname()
-  const isOn     = (href: string) => pathname === href || pathname.startsWith(href + '/')
+  const isOn = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
   return (
     <aside className="fixed left-0 top-14 h-[calc(100vh-56px)] w-[152px] bg-white border-r border-gray-200 flex flex-col justify-between z-10">
       <nav className="flex flex-col gap-0.5 pt-3 px-2">
 
-        {/* Dashboard → Drivers */}
-        {NAV_ITEMS.slice(0, 6).map(({ label, href, Icon }) => (
+        {/* Dashboard → Tasks → Settings */}
+        {NAV_ITEMS.slice(0, 5).map(({ label, href, Icon }) => (
           <Link key={href} href={href} className={`${LINK} ${isOn(href) ? ON : OFF}`}>
             <Icon size={20} />
             {label}
@@ -74,26 +63,18 @@ export default function Sidebar() {
 
         {/* Apps — custom PNG icon */}
         <Link href="/apps" className={`${LINK} ${isOn('/apps') ? ON : OFF}`}>
-          <CustomIcon
-            src="/images/icons/apps-icon.png"
-            alt="Apps"
-            active={isOn('/apps')}
-          />
+          <CustomIcon src="/images/icons/apps-icon.png" alt="Apps" active={isOn('/apps')} />
           Apps
         </Link>
 
-        {/* AI Chat — PNG converted from ICO for reliable cross-browser rendering */}
+        {/* AI Chat — custom PNG icon */}
         <Link href="/chat" className={`${LINK} ${isOn('/chat') ? ON : OFF}`}>
-          <CustomIcon
-            src="/images/icons/chat-icon.png"
-            alt="AI Chat"
-            active={isOn('/chat')}
-          />
+          <CustomIcon src="/images/icons/chat-icon.png" alt="AI Chat" active={isOn('/chat')} />
           AI Chat
         </Link>
 
         {/* Settings */}
-        {NAV_ITEMS.slice(6).map(({ label, href, Icon }) => (
+        {NAV_ITEMS.slice(5).map(({ label, href, Icon }) => (
           <Link key={href} href={href} className={`${LINK} ${isOn(href) ? ON : OFF}`}>
             <Icon size={20} />
             {label}

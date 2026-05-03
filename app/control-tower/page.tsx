@@ -13,10 +13,10 @@ const ALERTS = getMockAlerts()
 // ── Inner component that reads searchParams ────────────────────────────────────
 function ControlTowerInner() {
   const searchParams    = useSearchParams()
-  const [activeTab, setActiveTab] = useState<'camera' | 'forklift'>('camera')
+  const [activeTab, setActiveTab] = useState<'camera' | 'forklift' | 'heatmap' | 'stacking'>('camera')
 
   const handleTabChange = (tab: string) => {
-    if (tab === 'camera' || tab === 'forklift') setActiveTab(tab)
+    if (tab === 'camera' || tab === 'forklift' || tab === 'heatmap' || tab === 'stacking') setActiveTab(tab)
   }
   const [initialUnit, setInitialUnit] = useState<string | null>(null)
   const [alertBanner, setAlertBanner] = useState<string | null>(null)
