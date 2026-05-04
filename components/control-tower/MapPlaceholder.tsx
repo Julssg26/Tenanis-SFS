@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useRef, useState, useEffect } from 'react'
-import { Camera, Truck, Route } from 'lucide-react'
+import { Truck, Route } from 'lucide-react'
 import PlantHeatmapPanel  from '@/components/simulator/PlantHeatmapPanel'
 import TubeStackingPanel  from '@/components/simulator/TubeStackingPanel'
 import AStarPanel         from './AStarPanel'
@@ -28,20 +28,11 @@ const OLMap = dynamic(() => import('./OLMap'), {
   ),
 })
 
-// Custom icon component for Tube Stacking PNG
-function TubesIcon({ size = 14 }: { size?: number }) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src="/icons/Tubes.png" alt="Tubes" width={size} height={size}
-      style={{ objectFit: 'contain', display: 'inline-block' }} />
-  )
-}
-
-const TABS: Array<{ id: string; label: string; Icon: React.ComponentType<{ size?: number }> }> = [
-  { id: 'camera',   label: 'Truck Tracking',    Icon: Camera      },
+const TABS = [
+  { id: 'camera',   label: 'Truck Tracking',    Icon: Truck       },
   { id: 'forklift', label: 'Forklift Tracking', Icon: Truck       },
   { id: 'heatmap',  label: 'Trips Simulators',  Icon: Route       },
-  { id: 'stacking', label: 'Tube Stacking',     Icon: TubesIcon   },
+  { id: 'stacking', label: 'Tube Stacking',     Icon: Route       },
 ]
 const CAMERA_LEGEND = [
   { color: '#3b82f6', label: 'Warehouse → MOTU'    },
@@ -92,17 +83,36 @@ export default function MapPlaceholder({ activeTab, onTabChange, initialUnitId }
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div className="flex items-center justify-between border-b border-gray-200 px-4 pt-3 pb-0">
         <div className="flex">
-          {TABS.map(({ id, label, Icon }) => (
-            <button key={id} onClick={() => onTabChange(id)}
-              className={`flex items-center gap-2 px-4 py-2 text-[13px] font-medium border-b-2 transition-colors mr-2 ${
-                activeTab === id
-                  ? 'border-[#1a237e] text-[#1a237e]'
-                  : 'border-transparent text-gray-400 hover:text-gray-600'
-              }`}
-            >
-              <Icon size={14} />{label}
-            </button>
-          ))}
+          {TABS.map(({ id, label, Icon }) => {
+            const active = activeTab === id
+            // CSS filters to colorize black/dark PNG icons like lucide-react icons
+            // inactive: grayish  |  active: #1a237e blue
+            const imgFilter = active
+              ? 'brightness(0) invert(1) sepia(1) saturate(4) hue-rotate(200deg) brightness(0.7)'
+              : 'brightness(0) invert(0.55)'
+            return (
+              <button key={id} onClick={() => onTabChange(id)}
+                className={`flex items-center gap-2 px-4 py-2 text-[13px] font-medium border-b-2 transition-colors mr-2 ${
+                  active
+                    ? 'border-[#1a237e] text-[#1a237e]'
+                    : 'border-transparent text-gray-400 hover:text-gray-600'
+                }`}
+              >
+                {id === 'camera' ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src="/icons/TICO-tab.png" alt="Truck"
+                    style={{ width: 15, height: 15, objectFit: 'contain', filter: imgFilter, flexShrink: 0 }} />
+                ) : id === 'stacking' ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src="/icons/Tubes-tab.png" alt="Tubes"
+                    style={{ width: 15, height: 15, objectFit: 'contain', filter: imgFilter, flexShrink: 0 }} />
+                ) : (
+                  <Icon size={14} />
+                )}
+                {label}
+              </button>
+            )
+          })}
         </div>
         {isMapTab && (
           <div className="flex items-center gap-2 pb-2 flex-wrap">

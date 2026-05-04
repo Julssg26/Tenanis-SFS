@@ -18,14 +18,14 @@ export function getMockFleet(): FleetUnit[] {
       activeRoute: null, lastUpdated: new Date().toISOString(),
     },
     {
-      id: 'YT-01', name: 'Yard Tractor 01', type: 'yard_tractor', status: 'active',
+      id: 'YT-01', name: 'Tractor 01', type: 'yard_tractor', status: 'active',
       coordinates: [-96.2390, 19.1760],
       currentZone: 'Dispatch', operatorName: 'Luis Paredes',
       utilization: 91, maintenanceRisk: 25, fuelLevel: 88,
       activeRoute: 'Maintenance → Green Yard', lastUpdated: new Date().toISOString(),
     },
     {
-      id: 'CR-01', name: 'Crane 01', type: 'crane', status: 'maintenance',
+      id: 'CR-01', name: 'Tractor 02', type: 'crane', status: 'maintenance',
       coordinates: [-96.2350, 19.1810],
       currentZone: 'Inspection', operatorName: '—',
       utilization: 0, maintenanceRisk: 95, fuelLevel: 100,

@@ -157,3 +157,9 @@
 [data-theme="dark"] .asset-detail-header .border-gray-200 {
   border-color: #2d3250 !important;
 }
+
+/* ── Fleet Units: selected card dark mode ───────────────────────────────── */
+[data-theme="dark"] .fleet-card-selected {
+  background-color: #252840 !important;
+  border-color: #5c6bc0 !important;
+}

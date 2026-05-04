@@ -35,7 +35,7 @@ export default function FleetStatusCards({ units, selectedId, onSelect }: Props)
       </div>
 
       {/* Responsive grid — 2 cols on md, 4 cols on xl */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {units.map((unit) => {
           const cfg     = STATUS_CFG[unit.status]
           const selected = unit.id === selectedId
@@ -45,8 +45,8 @@ export default function FleetStatusCards({ units, selectedId, onSelect }: Props)
               onClick={() => onSelect(unit.id)}
               className={`w-full text-left rounded-xl border p-3 transition-all ${
                 selected
-                  ? 'border-[#1a237e] bg-[#e8eaf6] ring-2 ring-[#1a237e]/20'
-                  : `bg-gray-50 border-gray-200 hover:border-gray-300 hover:bg-white`
+                  ? 'fleet-card-selected border-[#1a237e] bg-[#e8eaf6] ring-2 ring-[#1a237e]/20'
+                  : 'bg-gray-50 border-gray-200 hover:border-gray-300 hover:bg-white'
               }`}
             >
               {/* Name + status */}
