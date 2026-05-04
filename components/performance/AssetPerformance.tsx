@@ -112,7 +112,12 @@ function MetricCard({
 }
 
 export default function AssetPerformance() {
-  const fleet = getMockFleet()
+  const fleet = getMockFleet().map(u => ({
+    ...u,
+    name: u.name === 'Yard Tractor 01' ? 'Tractor 01'
+        : u.name === 'Crane 01'        ? 'Tractor 02'
+        : u.name,
+  }))
   const [selectedId, setSelectedId] = useState<string>(fleet[0]?.id ?? '')
 
   const unit    = fleet.find(u => u.id === selectedId) ?? fleet[0]
@@ -138,7 +143,7 @@ export default function AssetPerformance() {
                 key={u.id}
                 onClick={() => setSelectedId(u.id)}
                 className={`w-full text-left px-4 py-3 transition-colors ${
-                  sel ? 'bg-[#e8eaf6]' : 'hover:bg-gray-50'
+                  sel ? 'bg-[#e8eaf6] asset-selected-item' : 'hover:bg-gray-50'
                 }`}
               >
                 <div className="flex items-center justify-between mb-0.5">
@@ -173,7 +178,7 @@ export default function AssetPerformance() {
       <div className="flex-1 space-y-4 min-w-0">
 
         {/* Header */}
-        <div className={`rounded-xl border p-4 ${sc.bg}`}>
+        <div className={`rounded-xl border p-4 asset-detail-header ${sc.bg}`}>
           <div className="flex items-start justify-between">
             <div>
               <div className={`text-[18px] font-bold ${sc.text}`}>{unit?.name}</div>
