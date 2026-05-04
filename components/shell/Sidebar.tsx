@@ -8,6 +8,7 @@ import {
   BarChart2,
   HeartPulse,
   ClipboardList,
+  Clapperboard,
   Settings,
 } from 'lucide-react'
 
@@ -38,6 +39,7 @@ const NAV_ITEMS = [
   { label: 'Performance',   href: '/performance',   Icon: BarChart2       },
   { label: 'Fleet Health',  href: '/fleet-health',  Icon: HeartPulse      },
   { label: 'Tasks',         href: '/drivers',       Icon: ClipboardList   },
+  { label: 'Events',        href: '/events',        Icon: Clapperboard    },
   { label: 'Settings',      href: '/settings',      Icon: Settings        },
 ]
 
@@ -53,8 +55,16 @@ export default function Sidebar() {
     <aside className="fixed left-0 top-14 h-[calc(100vh-56px)] w-[152px] bg-white border-r border-gray-200 flex flex-col justify-between z-10">
       <nav className="flex flex-col gap-0.5 pt-3 px-2">
 
-        {/* Dashboard → Tasks → Settings */}
+        {/* Dashboard → Tasks (indices 0-4) */}
         {NAV_ITEMS.slice(0, 5).map(({ label, href, Icon }) => (
+          <Link key={href} href={href} className={`${LINK} ${isOn(href) ? ON : OFF}`}>
+            <Icon size={20} />
+            {label}
+          </Link>
+        ))}
+
+        {/* Events (index 5) */}
+        {NAV_ITEMS.slice(5, 6).map(({ label, href, Icon }) => (
           <Link key={href} href={href} className={`${LINK} ${isOn(href) ? ON : OFF}`}>
             <Icon size={20} />
             {label}
@@ -74,7 +84,7 @@ export default function Sidebar() {
         </Link>
 
         {/* Settings */}
-        {NAV_ITEMS.slice(5).map(({ label, href, Icon }) => (
+        {NAV_ITEMS.slice(6).map(({ label, href, Icon }) => (
           <Link key={href} href={href} className={`${LINK} ${isOn(href) ? ON : OFF}`}>
             <Icon size={20} />
             {label}
