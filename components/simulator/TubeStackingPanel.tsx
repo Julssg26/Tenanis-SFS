@@ -1,6 +1,5 @@
-// components/simulator/TubeStackingPanel.tsx
-// Layout: [Scenario Configuration left] [3D Tube Stacking Viewer right]
 'use client'
+
 
 import { useState } from 'react'
 import { Play, Pause, RotateCcw } from 'lucide-react'
