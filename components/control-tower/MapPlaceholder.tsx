@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useRef, useState, useEffect } from 'react'
-import { Camera, Truck, Thermometer, Layers } from 'lucide-react'
+import { Camera, Truck, Route } from 'lucide-react'
 import PlantHeatmapPanel  from '@/components/simulator/PlantHeatmapPanel'
 import TubeStackingPanel  from '@/components/simulator/TubeStackingPanel'
 import AStarPanel         from './AStarPanel'
@@ -28,11 +28,20 @@ const OLMap = dynamic(() => import('./OLMap'), {
   ),
 })
 
-const TABS = [
+// Custom icon component for Tube Stacking PNG
+function TubesIcon({ size = 14 }: { size?: number }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src="/icons/Tubes.png" alt="Tubes" width={size} height={size}
+      style={{ objectFit: 'contain', display: 'inline-block' }} />
+  )
+}
+
+const TABS: Array<{ id: string; label: string; Icon: React.ComponentType<{ size?: number }> }> = [
   { id: 'camera',   label: 'Truck Tracking',    Icon: Camera      },
   { id: 'forklift', label: 'Forklift Tracking', Icon: Truck       },
-  { id: 'heatmap',  label: 'Trips Simulators',  Icon: Thermometer },
-  { id: 'stacking', label: 'Tube Stacking',     Icon: Layers      },
+  { id: 'heatmap',  label: 'Trips Simulators',  Icon: Route       },
+  { id: 'stacking', label: 'Tube Stacking',     Icon: TubesIcon   },
 ]
 const CAMERA_LEGEND = [
   { color: '#3b82f6', label: 'Warehouse → MOTU'    },

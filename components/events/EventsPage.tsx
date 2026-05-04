@@ -80,7 +80,7 @@ const ALL_EVENTS = [
   },
 ]
 
-type Tab = 'All' | 'Events' | 'Alerts'
+type Tab = 'All' | 'Events'
 
 const TYPE_COLOR: Record<string, string> = {
   'Unauthorized access':     'text-red-600   bg-red-50   border-red-200',
@@ -130,7 +130,7 @@ export default function EventsPage() {
 
       {/* Tabs */}
       <div className="flex gap-0 border-b border-gray-200">
-        {(['All','Events','Alerts'] as Tab[]).map(tab => (
+        {(['All','Events'] as Tab[]).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             className={`px-5 py-2.5 text-[13px] font-medium border-b-2 transition-colors mr-1 ${
               activeTab === tab
