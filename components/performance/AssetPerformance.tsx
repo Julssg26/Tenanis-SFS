@@ -10,6 +10,13 @@ import {
 import { getMockFleet } from '@/lib/fleet/mockFleet'
 import type { FleetUnit } from '@/lib/fleet/types'
 
+// ── Vehicle type icon resolver ────────────────────────────────────────────
+function vehicleIcon(type: string): string {
+  if (type === 'forklift')     return '/icons/Forklit-Tracking.png'
+  if (type === 'yard_tractor') return '/icons/TICO.png'
+  return '/icons/TICO.png'   // fallback for crane, shuttle, etc.
+}
+
 // ── Extended mock metrics per unit ────────────────────────────────────────
 interface AssetMetrics {
   mileageKm:      number
@@ -135,9 +142,19 @@ export default function AssetPerformance() {
                 }`}
               >
                 <div className="flex items-center justify-between mb-0.5">
-                  <span className={`text-[12px] font-semibold ${sel ? 'text-[#1a237e]' : 'text-gray-800'}`}>
-                    {u.name}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={vehicleIcon(u.type)}
+                      alt={u.type}
+                      width={22}
+                      height={22}
+                      style={{ objectFit: 'contain', flexShrink: 0 }}
+                    />
+                    <span className={`text-[12px] font-semibold ${sel ? 'text-[#1a237e]' : 'text-gray-800'}`}>
+                      {u.name}
+                    </span>
+                  </div>
                   <div className={`w-2 h-2 rounded-full flex-shrink-0 ${s.dot}`} />
                 </div>
                 <div className="text-[10px] text-gray-400 flex items-center gap-1">
