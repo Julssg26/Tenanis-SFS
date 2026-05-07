@@ -9,6 +9,7 @@ import {
   HeartPulse,
   ClipboardList,
   Clapperboard,
+  Wrench,
   Settings,
 } from 'lucide-react'
 
@@ -81,6 +82,12 @@ export default function Sidebar() {
         <Link href="/chat" className={`${LINK} ${isOn('/chat') ? ON : OFF}`}>
           <CustomIcon src="/images/icons/chat-icon.png" alt="AI Chat" active={isOn('/chat')} />
           AI Chat
+        </Link>
+
+        {/* Maintenance */}
+        <Link href="/maintenance" className={`${LINK} ${isOn('/maintenance') ? ON : OFF}`}>
+          <Wrench size={20} />
+          Maintenance
         </Link>
 
         {/* Settings */}
