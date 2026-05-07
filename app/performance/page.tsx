@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import SectionHeader from '@/components/ui/SectionHeader'
 import EquipmentRanking from '@/components/performance/EquipmentRanking'
-import AssetPerformance from '@/components/performance/AssetPerformance'
+import AssetPerformanceTabs from '@/components/performance/AssetPerformanceTabs'
 import DataTable from '@/components/ui/DataTable'
 import Badge from '@/components/ui/Badge'
 import type { Column } from '@/components/ui/DataTable'
@@ -18,9 +18,9 @@ import clsx from 'clsx'
 // ─── Tabs config ──────────────────────────────────────────────────────────────
 const TABS = [
   { id: 'equipment', label: 'General View', Icon: Settings2 },
-  { id: 'asset',     label: 'Asset Performance', Icon: Gauge },
-  { id: 'operator',  label: 'Operator Performance',  Icon: User      },
-  { id: 'flow',      label: 'Flow Analysis',          Icon: TrendingUp },
+  { id: 'asset', label: 'Asset Performance', Icon: Gauge },
+  { id: 'operator', label: 'Operator Performance', Icon: User },
+  { id: 'flow', label: 'Flow Analysis', Icon: TrendingUp },
 ] as const
 
 type PerformanceTab = typeof TABS[number]['id']
@@ -31,30 +31,30 @@ function getIdleBadge(idle: number) {
   if (idle <= 25) return <Badge label={`${idle} %`} color="orange" />
   return <Badge label={`${idle} %`} color="red" />
 }
+
 function getEffBadge(eff: number) {
   if (eff >= 80) return <Badge label={`${eff} %`} color="green" />
   return <Badge label={`${eff} %`} color="orange" />
 }
+
 const EQUIP_COLS: Column<EquipmentPerf>[] = [
-  { key: 'id',         header: 'Operator'                                                          },
-  { key: 'onHours',    header: 'On Hours',   render: r => `${r.onHours} h`                        },
-  { key: 'effective',  header: 'Effective',  render: r => `${r.effective} h`                      },
-  { key: 'idle',       header: 'Idle',       render: r => getIdleBadge(r.idle),  align: 'center'  },
-  { key: 'cycles',     header: 'Cycles'                                                            },
+  { key: 'id', header: 'Operator' },
+  { key: 'onHours', header: 'On Hours', render: r => `${r.onHours} h` },
+  { key: 'effective', header: 'Effective', render: r => `${r.effective} h` },
+  { key: 'idle', header: 'Idle', render: r => getIdleBadge(r.idle), align: 'center' },
+  { key: 'cycles', header: 'Cycles' },
   { key: 'efficiency', header: 'Efficiency', render: r => getEffBadge(r.efficiency), align: 'center' },
 ]
 
 // ─── Operator Performance tab ─────────────────────────────────────────────────
 // Derived data for this tab from existing OPERATORS mock
 const OPERATOR_PERF_DATA = OPERATORS.map(op => ({
-  operator:        op.name,
+  operator: op.name,
   routeCompliance: op.compliance,
-  effectivePct:    Math.round(op.compliance * 0.93),   // derived approximation
-  incidents:       op.incidents,
-  score:           op.score,
+  effectivePct: Math.round(op.compliance * 0.93),
+  incidents: op.incidents,
+  score: op.score,
 }))
-
-type OpPerfRow = typeof OPERATOR_PERF_DATA[number]
 
 function IncidentBadge({ n }: { n: number }) {
   return (
@@ -66,8 +66,10 @@ function IncidentBadge({ n }: { n: number }) {
     </span>
   )
 }
+
 function ScorePill({ s }: { s: number }) {
   const bg = s >= 90 ? 'bg-green-600' : s >= 80 ? 'bg-green-500' : s >= 70 ? 'bg-yellow-400' : 'bg-red-500'
+
   return (
     <span className={clsx(
       'inline-flex items-center justify-center px-4 py-1 rounded-full text-[13px] font-bold text-white min-w-[52px]',
@@ -79,9 +81,9 @@ function ScorePill({ s }: { s: number }) {
 }
 
 function OperatorPerfTab() {
-  const [query, setQuery]   = useState('')
-  const [page, setPage]     = useState(1)
-  const PAGE_SIZE           = 5
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 5
 
   const filtered = query
     ? OPERATOR_PERF_DATA.filter(r =>
@@ -90,9 +92,12 @@ function OperatorPerfTab() {
     : OPERATOR_PERF_DATA
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const paginated  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
-  const clear = () => { setQuery(''); setPage(1) }
+  const clear = () => {
+    setQuery('')
+    setPage(1)
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -103,11 +108,15 @@ function OperatorPerfTab() {
           <input
             type="text"
             value={query}
-            onChange={e => { setQuery(e.target.value); setPage(1) }}
+            onChange={e => {
+              setQuery(e.target.value)
+              setPage(1)
+            }}
             placeholder="Buscar"
             className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-2 text-[13px] outline-none focus:border-[#1a237e]"
           />
         </div>
+
         <button
           onClick={clear}
           className="bg-[#1a237e] text-white text-[13px] font-medium px-5 py-2 rounded-lg hover:bg-[#283593] transition-colors whitespace-nowrap"
@@ -120,11 +129,14 @@ function OperatorPerfTab() {
       <table className="w-full">
         <thead>
           <tr className="bg-[#1a237e]">
-            {['Operator','Route Compliance','Effective %','Incidents','Score'].map(h => (
-              <th key={h} className="px-5 py-3 text-[12px] font-semibold text-white text-left">{h}</th>
+            {['Operator', 'Route Compliance', 'Effective %', 'Incidents', 'Score'].map(h => (
+              <th key={h} className="px-5 py-3 text-[12px] font-semibold text-white text-left">
+                {h}
+              </th>
             ))}
           </tr>
         </thead>
+
         <tbody>
           {paginated.map((row, i) => (
             <tr key={i} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
@@ -143,12 +155,40 @@ function OperatorPerfTab() {
         <span>Elementos por página:</span>
         <span className="border border-gray-200 rounded px-2 py-1">{PAGE_SIZE}</span>
         <span className="mx-3">
-          {(page-1)*PAGE_SIZE+1}–{Math.min(page*PAGE_SIZE, filtered.length)} de {filtered.length}
+          {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} de {filtered.length}
         </span>
-        <button onClick={() => setPage(1)}          disabled={page===1}          className="disabled:opacity-30 hover:text-[#1a237e]"><ChevronsLeft size={15}/></button>
-        <button onClick={() => setPage(p=>p-1)}     disabled={page===1}          className="disabled:opacity-30 hover:text-[#1a237e]"><ChevronLeft  size={15}/></button>
-        <button onClick={() => setPage(p=>p+1)}     disabled={page===totalPages} className="disabled:opacity-30 hover:text-[#1a237e]"><ChevronRight size={15}/></button>
-        <button onClick={() => setPage(totalPages)} disabled={page===totalPages} className="disabled:opacity-30 hover:text-[#1a237e]"><ChevronsRight size={15}/></button>
+
+        <button
+          onClick={() => setPage(1)}
+          disabled={page === 1}
+          className="disabled:opacity-30 hover:text-[#1a237e]"
+        >
+          <ChevronsLeft size={15} />
+        </button>
+
+        <button
+          onClick={() => setPage(p => p - 1)}
+          disabled={page === 1}
+          className="disabled:opacity-30 hover:text-[#1a237e]"
+        >
+          <ChevronLeft size={15} />
+        </button>
+
+        <button
+          onClick={() => setPage(p => p + 1)}
+          disabled={page === totalPages}
+          className="disabled:opacity-30 hover:text-[#1a237e]"
+        >
+          <ChevronRight size={15} />
+        </button>
+
+        <button
+          onClick={() => setPage(totalPages)}
+          disabled={page === totalPages}
+          className="disabled:opacity-30 hover:text-[#1a237e]"
+        >
+          <ChevronsRight size={15} />
+        </button>
       </div>
     </div>
   )
@@ -156,11 +196,11 @@ function OperatorPerfTab() {
 
 // ─── Flow Analysis tab ────────────────────────────────────────────────────────
 const FLOW_ROUTES = [
-  { from: 'Blue Yard',  to: 'MOTU',       trips: 87, avgMin: 18 },
-  { from: 'Storage A',  to: 'Dispatch',   trips: 72, avgMin: 22 },
+  { from: 'Blue Yard', to: 'MOTU', trips: 87, avgMin: 18 },
+  { from: 'Storage A', to: 'Dispatch', trips: 72, avgMin: 22 },
   { from: 'Inspection', to: 'Green Yard', trips: 64, avgMin: 15 },
-  { from: 'MOTU',       to: 'Dispatch',   trips: 58, avgMin: 25 },
-  { from: 'Green Yard', to: 'Storage A',  trips: 45, avgMin: 12 },
+  { from: 'MOTU', to: 'Dispatch', trips: 58, avgMin: 25 },
+  { from: 'Green Yard', to: 'Storage A', trips: 45, avgMin: 12 },
 ]
 
 function FlowAnalysisTab() {
@@ -238,9 +278,9 @@ export default function PerformancePage() {
         </>
       )}
 
-      {activeTab === 'asset'    && <AssetPerformance />}
+      {activeTab === 'asset' && <AssetPerformanceTabs />}
       {activeTab === 'operator' && <OperatorPerfTab />}
-      {activeTab === 'flow'     && <FlowAnalysisTab />}
+      {activeTab === 'flow' && <FlowAnalysisTab />}
     </div>
   )
 }

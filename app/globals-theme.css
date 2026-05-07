@@ -163,3 +163,9 @@
   background-color: #252840 !important;
   border-color: #5c6bc0 !important;
 }
+
+/* ── Asset Details: selected vehicle dark mode ──────────────────────────── */
+[data-theme="dark"] .asset-details-selected {
+  background-color: #252840 !important;
+  border-color: #5c6bc0 !important;
+}
